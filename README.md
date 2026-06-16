@@ -22,3 +22,23 @@ Undergraduate thesis — Universitas Malikussaleh (2026).
 ## Author
 Rehan Zubaidari — Information Systems, Universitas Malikussaleh
 rehanzubaidari@gmail.com
+
+## Screenshots
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Login Page
+![Login](screenshots/login.png)
+
+### Upload Data
+![Upload Data](screenshots/upload-data.png)
+
+### Actual Consumption Data
+![Actual Consumption](screenshots/grafik-konsumsi-aktual.png)
+
+### Forecasting Results
+![Forecasting Results](screenshots/grafik-konsumsi-prediksi.png)
+
+### Download Consumption Data
+![Download Data](screenshots/unduh-konsumsi-aktual.png)
