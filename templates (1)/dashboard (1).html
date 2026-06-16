@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% block flash %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul id="flash-messages" class="flash-messages-dashboard">
+                    {% for category, message in messages %}
+                        <li class="alert alert-{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    {% endblock %}
+
+<div class="dashboard-container">
+  <div class="dashboard-cards">
+    <div class="card-one">
+      <h3>Total Pelanggan Aktif</h3>
+      <p>8.524</p>
+    </div>
+    <div class="card-two">
+      <h3>Total Rute Sambungan</h3>
+      <p>58</p>
+    </div>
+    <div class="card-three">
+      <h3>Total Jenis Bangunan</h3>
+      <p>18</p>
+    </div>
+    <div class="card-four">
+      <h3>Total Kategori Golongan</h3>
+      <p>4</p>
+    </div>
+  </div>
+
+  <div class="section-tren-konsumsi">
+    <h3>Tren Konsumsi Air Pelanggan</h3>
+    <canvas id="konsumsiChart"></canvas>
+  </div>
+
+  <div class="section-prediksi-konsumsi">
+    <div class="prediksi-card">
+      <h3>Prediksi Konsumsi Januari 2025</h3>
+      <p class="angka-prediksi">140.104,04 m³</p>
+      <p class="note">Berdasarkan model ARIMA</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Tambahkan Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('konsumsiChart').getContext('2d');
+  const konsumsiChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      datasets: [{
+        label: 'Konsumsi Air (M³)',
+        data: [149949,  137785,  140819, 155502, 159751, 146391, 153663, 141541, 153479, 153462, 141034, 146806],
+        borderColor: '#7DA0CA',
+        backgroundColor: 'rgba(0, 102, 255, 0.1)',
+        pointBackgroundColor: '#1A3D63',
+        pointBorderColor: '#4A7FA7',
+        pointHoverBackgroundColor: '#FFD700',
+        pointHoverBorderColor: '#333',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+  legend: { display: false },
+  tooltip: {
+    callbacks: {
+      label: function(context) {
+        let value = context.parsed.y;
+        return 'Konsumsi: ' + value.toLocaleString('id-ID') + ' m³';
+      }
+    }
+  }
+},
+       scales: {
+  x: {
+    ticks: {
+      font: {
+        family: 'Poppins',
+        size: 13,
+        weight: 'bold'
+      }
+    },
+    grid: {
+      color: '#eee'  // Garis grid abu terang di sumbu X
+    }
+  },
+  y: {
+    ticks: {
+      font: {
+        family: 'Poppins',
+        size: 12,
+        weight: 'bold'
+      },
+      callback: function (value) {
+        return value.toLocaleString('id-ID');
+      }
+    },
+    grid: {
+      color: '#eee'  // Garis grid abu terang di sumbu Y
+    },
+    title: {
+      display: true,
+      text: 'Konsumsi Air (M³)',  // Label Y Axis
+      font: {
+        family: 'Poppins',
+        size: 14,
+        weight: 'bold'
+      },
+      color: '#1a3d63'  // Warna teks label
+    }
+  }
+      }
+    }
+  });
+</script>
+{% endblock %}

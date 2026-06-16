@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Code</title>
+
+  <!-- Font & CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+</head>
+<body>
+<div class="verify-code-page">
+  <div class="left-section">
+    <div class="left-top">
+      <h1 class="title">
+        <span>Welcome to</span><br />
+        <span class="bold">Access Clean Water Forecasts</span><br />
+        <span>at</span> <span class="bold">PERUMDA</span> <span>Air Minum</span><br />
+        <span class="bold">TIRTA TAMIANG</span><br />
+        <span>in</span> <span class="bold">KARANG BARU</span><br />
+      </h1>
+    </div>
+    <div class="left-image">
+      <img src="{{ url_for('static', filename='img/tampilan_verify_code.svg') }}" alt="Verification Illustration" />
+    </div>
+  </div>
+
+  <div class="right-section">
+
+        <!-- Flash message jika ada -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flash-messages">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+    <h1 class="verify-code-instruction"><span class="bold">Verify the Code</span></h1>
+    <p class="info-text">We've sent a 6-digit code to your email</p>
+    <p class="info-text">Please enter the code below</p>
+
+    <form action="{{ url_for('verify_code') }}" method="post" class="form-container">
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_verification_code.svg') }}" alt="OTP Icon" />
+        <input type="text" name="otp_code" placeholder="Enter 6-digit code" required maxlength="6" />
+      </div>
+      <button type="submit" class="submit-button">Verify</button>
+    </form>
+
+    <p class="resend-text">Didn't receive the code?
+            {% if session.get('otp_code_reset') %}
+              <a href="{{ url_for('resend_code_reset') }}">Resend</a>
+            {% else %}
+              <a href="{{ url_for('resend_code_signup') }}">Resend</a>
+            {% endif %}
+        </p>
+  </div>
+</div>
+</body>
+</html>

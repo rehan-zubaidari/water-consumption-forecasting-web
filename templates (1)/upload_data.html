@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Unggah Data Konsumsi Pelanggan Air Bersih <span class="emoji">📤</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Upload Data Baru</h1>
+  <p>Silahkan unggah file csv data konsumsi pelanggan air bersih yang terbaru di sini</p>
+</div>
+
+                  {% block flash %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                       <ul id="flash-messages" class="flash-messages-upload">
+                          {% for category, message in messages %}
+                            <li class="alert alert-{{ category }}">{{ message }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% endwith %}
+                  {% endblock %}
+
+
+<div class="upload-container">
+  <p class="info-text">Format file yang didukung: <strong>.csv</strong></p>
+
+  <form method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <input type="file" name="file" accept=".csv" required>
+    </div>
+    <button type="submit" class="btn main-btn">📂 Upload</button>
+  </form>
+  
+ <!-- Download Template -->
+  <div class="template-download">
+    <p class="info-text-upload">Belum punya format? Unduh template CSV di sini:</p>
+      <a href=" {{ url_for('static', filename='template_data/TEMPLATE_UPLOAD_DATA.csv') }}"
+        class="btn main-btn" download>
+          📥Download Template CSV
+      </a>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+instance/
+*.db
+app.log
+alur.txt
+table.txt
+kode_grafikterpisahdetailpage.txt
+static/uploads/profile_pictures/
+static/uploads/data/

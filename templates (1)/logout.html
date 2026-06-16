@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Keluar dari Sistem<span class="emoji">🚪</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Konfirmasi Logout</h1>
+  <p>Apakah Anda yakin ingin mengakhiri sesi ini?</p>
+</div>
+
+<div class="logout-page text-center">
+  <h2>Keluar dari Sistem?</h2>
+    <p>Anda akan keluar dari akun 
+        <strong>{{ user.full_name if user else 'Pengguna' }}</strong>
+    </p>
+  <form method="post" action="{{ url_for('logout') }}">
+    <button type="submit" class="btn btn-danger">Ya, Logout</button>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Batal</a>
+  </form>
+
+                    {% block flash %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                       <ul id="flash-messages" class="flash-messages-logout">
+                          {% for category, message in messages %}
+                            <li class="alert alert-{{ category }}">{{ message }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% endwith %}
+                  {% endblock %}
+</div>
+{% endblock %}

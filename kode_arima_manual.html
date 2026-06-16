@@ -1,0 +1,452 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Hasil Forecasting Konsumsi Pelanggan<span class="emoji">📈</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <p class="description">Prediksi dilakukan berdasarkan data historis konsumsi air pada pelanggan dari periode Januari 2022 hingga Desember 2024</p>
+
+          <table class="tabel-forecasting">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Bulan</th>
+                <th>Prediksi Konsumsi (M3)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in forecast_df %}
+                <tr>
+                  <td>{{ loop.index + (page - 1) * per_page }}</td>
+                  <td>{{ row[1]['TANGGAL'].strftime('%B %Y') }}</td>
+                  <td>{{ "%.2f"|format(row[1]['PREDIKSI_KONSUMSI']) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+                      <div class="pagination-forecasting">
+                  {% if page > 1 %}
+                      <a href="{{ url_for('forecasting_konsumsi', page=1) }}">&laquo; First</a>
+                      <a href="{{ url_for('forecasting_konsumsi', page=page-1) }}">&lt; Prev</a>
+                  {% endif %}
+
+                  <span>Page {{ page }} of {{ total_pages }}</span>
+
+                  {% if page < total_pages %}
+                      <a href="{{ url_for('forecasting_konsumsi', page=page+1) }}">Next &gt;</a>
+                      <a href="{{ url_for('forecasting_konsumsi', page=total_pages) }}">Last &raquo;</a>
+                  {% endif %}
+              </div>
+
+            <script src="{{ url_for('static', filename='js/filter-forecast-toggle.js') }}"></script>
+
+            
+            <div class="evaluasi-container">
+                <div class="evaluasi">
+                  <h3>Evaluasi Model</h3>
+                  <ul>
+                    <li>MAE: {{ "%.2f"|format(evaluasi['MAE']) }}</li>
+                    <li>MSE: {{ "%.2f"|format(evaluasi['MSE']) }}</li>
+                    <li>RMSE: {{ "%.2f"|format(evaluasi['RMSE']) }}</li>
+                    <li>MAPE: {{ "%.2f"|format(evaluasi['MAPE (%)']) }}</li>
+                    <li>AIC: {{ "%.2f"|format(evaluasi['AIC']) }}</li>
+                  </ul>
+                </div>
+              </div>
+
+      <img src="{{ acf_pacf_plot }}" alt="ACF PACF Plot">
+      <img src="{{ forecast_plot }}" alt="Forecast Plot">
+      <img src="{{ decomposition_plot }}" alt="Decomposition Plot">
+
+        <h2>Forecast 72 Bulan ke Depan - Manual ARIMA (2,1,2)</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Bulan</th>
+                  <th>Prediksi Konsumsi (Manual)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in forecast_manual_df.iterrows() %}
+                  <tr>
+                    <td>{{ row[1]['TANGGAL'].strftime('%B %Y') }}</td>
+                    <td>{{ "%.2f"|format(row[1]['PREDIKSI_KONSUMSI']) }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <div class="evaluasi"></div>
+            <h3>Evaluasi Model Manual</h3>
+            <ul>
+              <li>MAE: {{ "%.2f"|format(evaluasi_manual['MAE']) }}</li>
+              <li>MSE: {{ "%.2f"|format(evaluasi_manual['MSE']) }}</li>
+              <li>RMSE: {{ "%.2f"|format(evaluasi_manual['RMSE']) }}</li>
+              <li>MAPE: {{ "%.2f"|format(evaluasi_manual['MAPE (%)']) }}</li>
+              <li>AIC: {{ "%.2f"|format(evaluasi_manual['AIC']) }}</li>
+            </ul>
+
+            <img src="{{ forecast_manual_plot }}" alt="Forecast Manual Plot">
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Hasil Forecasting Konsumsi Pelanggan<span class="emoji">📈</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <p class="description">Prediksi dilakukan berdasarkan data historis konsumsi air pada pelanggan dari periode Januari 2022 hingga Desember 2024</p>
+
+<div class="filter-forecast-button-container">
+    <button id="toggleFilterBtn" class="btn-filter-forecast">Tampilkan Filter</button>
+</div>
+<!-- Container filter yang akan disembunyikan -->
+<div id="filterForecastContainer" class="hidden-forecast">
+    <form method="GET" action="{{ url_for('forecasting_konsumsi') }}" class="filter-forecast-form">
+
+        <div class="filter-forecast-group">
+            <label for="tahun">Tahun:</label>
+            <select name="tahun" id="tahun">
+                <option value="">Semua</option>
+                {% for t in daftar_tahun %}
+                    <option value="{{ t }}" {% if request.args.get('tahun')|int == t %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-forecast-group">
+            <label for="bulan">Bulan:</label>
+             <select name="bulan" id="bulan">
+                <option value="">Semua</option>
+                {% for b in daftar_bulan %}
+                    <option value="{{ b }}" {% if request.args.get('bulan') == b %}selected{% endif %}>{{ b }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-forecast-group">
+            <label for="rute">Rute:</label>
+                <select name="rute" id="rute">
+                <option value="">Semua</option>
+                {% for r in daftar_rute %}
+                    <option value="{{ r }}" {% if request.args.get('rute') == r %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-forecast-group">
+            <label for="kode">Kode:</label>
+                <select name="kode" id="kode">
+                <option value="">Semua</option>
+                {% for k in daftar_kode %}
+                    <option value="{{ k }}" {% if request.args.get('kode') == k %}selected{% endif %}>{{ k }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-forecast-group">
+            <label for="kategori_golongan">Kategori Golongan:</label>
+                <select name="kategori_golongan" id="kategori_golongan">
+                <option value="">Semua</option>
+                {% for g in daftar_kategori_golongan %}
+                    <option value="{{ g }}" {% if request.args.get('kategori_golongan') == g %}selected{% endif %}>{{ g }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-forecast-group">
+            <label for="jenis_bangunan">Jenis Bangunan:</label>
+                <select name="jenis_bangunan" id="jenis_bangunan">
+                <option value="">Semua</option>
+                {% for j in daftar_jenis_bangunan %}
+                    <option value="{{ j }}" {% if request.args.get('jenis_bangunan') == j %}selected{% endif %}>{{ j }}</option>
+                {% endfor %}
+            </select>
+        </div>
+          <button type="submit">Terapkan Filter</button>
+                  <a href="{{ url_for('forecasting_konsumsi') }}" class="reset-button-forecast">Reset</a>
+    </form>
+</div>
+
+                  {% block flash %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        <ul class="flash-messages-forecast">
+                          {% for category, message in messages %}
+                            <li class="alert alert-{{ category }}">{{ message }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% endwith %}
+                  {% endblock %}
+
+                <table class="tabel-forecasting">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Bulan</th>
+                      <th>Prediksi Konsumsi (M3)</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                    {% set data_forecast = forecast_df_filter if forecast_df_filter else forecast_df %}
+                    {% set eval_data = evaluasi_filter if evaluasi_filter else evaluasi %}
+                    {% set plot_forecast = forecast_plot_filter if forecast_plot_filter else forecast_plot %}
+                    {% set plot_decomp = decomposition_plot_filter if decomposition_plot_filter else decomposition_plot %}
+
+                    {% for row in data_forecast %}
+                    <tr>
+                      <td>{{ loop.index + (page - 1) * per_page }}</td>
+                      <td>{{ row[1]['TANGGAL'].strftime('%B %Y') }}</td>
+                      <td>{{ "{:,.2f}".format(row[1]['PREDIKSI_KONSUMSI']).replace(",", "X").replace(".", ",").replace("X", ".") }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+                    <div class="pagination-forecasting">
+                        {% if page > 1 %}
+                            <a href="{{ url_for('forecasting_konsumsi', page=1, **args) }}">&laquo; First</a>
+                            <a href="{{ url_for('forecasting_konsumsi', page=page-1, **args) }}">&lt; Prev</a>
+                        {% endif %}
+
+                        <span>Page {{ page }} of {{ total_pages }}</span>
+
+                        {% if page < total_pages %}
+                            <a href="{{ url_for('forecasting_konsumsi', page=page+1, **args) }}">Next &gt;</a>
+                            <a href="{{ url_for('forecasting_konsumsi', page=total_pages, **args) }}">Last &raquo;</a>
+                        {% endif %}
+                    </div>
+
+            <script src="{{ url_for('static', filename='js/filter-forecast-toggle.js') }}"></script>
+
+
+
+            <div class="evaluasi-container">
+                <div class="evaluasi">
+                  <h3>Evaluasi Model</h3>
+                  <ul>
+                      <li>MAE: {{ "%.2f"|format(eval_data['MAE']) }}</li>
+                      <li>MSE: {{ "%.2f"|format(eval_data['MSE']) }}</li>
+                      <li>RMSE: {{ "%.2f"|format(eval_data['RMSE']) }}</li>
+                      <li>MAPE: {{ "%.2f"|format(eval_data['MAPE (%)']) }}</li>
+                      <li>AIC: {{ "%.2f"|format(eval_data['AIC']) }}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="forecast-plot-container">
+                <img src="{{ forecast_plot }}" alt="Forecast Plot" class="forecast-plot">
+              </div>
+
+              <div class="decomposition-plot-container">
+                <img src="{{ decomposition_plot }}" alt="Decomposition Plot">
+              </div>
+
+{% endblock %}
+
+
+
+# import pandas as pd
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from itertools import product
+from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
+from statsmodels.tsa.seasonal import seasonal_decompose
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+import logging
+logger = logging.getLogger(__name__)
+
+
+
+def forecast_konsumsi(df, filter_column, filter_value, tahun=None, bulan=None):
+    logger.info(f"Mulai forecasting untuk filter {filter_column} = {filter_value}")
+    try:
+        # Filter sesuai pilihan user
+        logger.info(" Memfilter data...")
+        df_filtered = df[df[filter_column] == filter_value].copy()
+        df_filtered['TANGGAL'] = pd.to_datetime(df_filtered['TANGGAL'])
+        df_filtered = df_filtered.sort_values(by='TANGGAL')
+        df_filtered.set_index('TANGGAL', inplace=True)
+
+        # Agregasi bulanan
+        logger.info("Mengagregasi data bulanan...")
+        df_filtered = df_filtered.groupby(pd.Grouper(freq='MS')).sum()
+        df_filtered = df_filtered.ffill()
+
+        series = df_filtered['KONSUMSI']
+        logger.info(f"Jumlah data setelah filter: {len(df_filtered)} baris")
+
+        # Train-test split
+        logger.info(" Membagi data train & test...")
+        train_size = int(len(series) * 0.8)
+        train, test = series[:train_size], series[train_size:]
+
+        if len(series) < 20:
+            raise ValueError("Data terlalu sedikit untuk ARIMA (min 20 bulan)")
+
+        # Uji stasioneritas
+        logger.info(" Menguji stasioneritas data...")
+        def make_stationary(series):
+            d = 0
+            while True:
+                result = adfuller(series)
+                if result[1] < 0.05:
+                    break
+                series = series.diff().dropna()
+                d += 1
+                if d > 3:
+                    break
+            return series, d
+
+        series_stationary, best_d = make_stationary(series)
+        logger.info(f"Nilai d terpilih: {best_d}")
+
+        # Decompose
+        logger.info(" Membuat seasonal decomposition...")
+        decomp = seasonal_decompose(series, model='additive')
+        decomp.plot()
+        plt.tight_layout()
+        plt.savefig(f"static/decomposition_{filter_value}.png")
+        plt.close()
+        logger.info(f"Plot decomposition disimpan: static/decomposition_{filter_value}.png")
+
+        # Grid search ARIMA
+        logger.info(" Memulai grid search ARIMA...")
+        best_mape = float("inf")
+        best_aic = float("inf")
+        best_cfg = None
+        best_model = None
+
+        for p, q in product(range(2, 5), range(2, 5)):
+            try:
+                model = ARIMA(train, order=(p, best_d, q)).fit()
+                pred = model.predict(start=test.index[0], end=test.index[-1])
+                mape = mean_absolute_percentage_error(test, pred) * 100
+                aic = model.aic
+                if (mape < best_mape) or (np.isclose(mape, best_mape) and aic < best_aic):
+                    best_mape = mape
+                    best_aic = aic
+                    best_cfg = (p, best_d, q)
+                    best_model = model
+            except Exception as e:
+                logger.debug(f"Gagal fit model ARIMA({p},{best_d},{q}): {e}")
+                continue
+
+        logger.info(f"Model baru terbaik ditemukan: {best_cfg} dengan MAPE {best_mape:.2f}% dan AIC {best_aic:.2f}")
+
+        # Evaluasi model terbaik
+        logger.info(" Mengevaluasi model terbaik...")
+        pred = best_model.predict(start=test.index[0], end=test.index[-1])
+        evaluasi = {
+            "Best_Order_(p,d,q)": best_cfg,
+            "MAE": mean_absolute_error(test, pred),
+            "MSE": mean_squared_error(test, pred),
+            "RMSE": np.sqrt(mean_squared_error(test, pred)),
+            "MAPE (%)": best_mape,
+            "AIC": best_aic
+        }
+        logger.info(f"Hasil evaluasi: {evaluasi}")
+
+        # Forecast ke depan
+        logger.info("Membuat forecast 72 bulan ke depan...")
+        final_model = ARIMA(series, order=best_cfg).fit()
+        forecast_steps = 72
+        future_forecast = final_model.forecast(steps=forecast_steps)
+        future_dates = pd.date_range(start=series.index[-1] + pd.DateOffset(months=1),
+                                     periods=forecast_steps, freq='MS')
+        forecast_df = pd.DataFrame({
+            'TANGGAL': future_dates,
+            'PREDIKSI_KONSUMSI': future_forecast
+        })
+
+        logger.info(f"Forecast selesai. Total prediksi: {len(forecast_df)} baris")
+
+        # --- Filter sesuai tahun & bulan ---
+        if tahun:
+            forecast_df = forecast_df[forecast_df['TANGGAL'].dt.year == tahun]
+            logger.info(f"Filter tahun {tahun}: {len(forecast_df)} baris")
+        if bulan:
+            forecast_df = forecast_df[forecast_df['TANGGAL'].dt.month == bulan]
+            logger.info(f"Filter bulan {bulan}: {len(forecast_df)} baris")
+
+       # Simpan plot
+        logger.info("Menyimpan plot hasil forecast...")
+        plt.figure(figsize=(12, 5))
+        plt.plot(series.index, series.values, label="Data Aktual")
+        plt.plot(forecast_df['TANGGAL'], forecast_df['PREDIKSI_KONSUMSI'], label="Forecast", color='orange')
+        plt.title(f"Forecast Konsumsi - {filter_value}")
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"static/forecast_{filter_value}.png")
+        plt.close()
+        logger.info(f"Plot forecast disimpan: static/forecast_{filter_value}.png")
+
+        logger.info(f"=== Forecast selesai untuk {filter_value} ===")
+        return forecast_df, evaluasi
+
+    except Exception as e:
+        logger.exception(f"Error saat forecasting {filter_value}: {e}")
+        return None, None
+
+
+
+
+def jalankan_semua_forecast(df, filter_list, tahun=None, bulan=None):
+        """
+        Menjalankan forecasting untuk semua filter di filter_list.
+
+        Parameters:
+            df (DataFrame)        : Data sumber
+            filter_list (list)    : List tuple berisi (filter_column, filter_value)
+            tahun (int)           : Opsional, filter tahun
+            bulan (int)           : Opsional, filter bulan
+
+        Returns:
+            dict: key = (filter_column, filter_value),
+                value = (forecast_df, evaluasi)
+        """
+        
+        hasil = {}
+        logger.info(f"Menjalankan semua forecast untuk {len(filter_list)} filter...")
+        
+        for filter_column, filter_value in filter_list:
+            logger.info(f"=== Mulai forecast {filter_column} = {filter_value} ===")
+            forecast_df, evaluasi = forecast_konsumsi(
+                df, 
+                filter_column, 
+                filter_value, 
+                tahun=tahun, 
+                bulan=bulan
+            )
+            hasil[(filter_column, filter_value)] = (forecast_df, evaluasi)
+        
+        logger.info("=== Semua forecast selesai ===")
+        return hasil
+
+        

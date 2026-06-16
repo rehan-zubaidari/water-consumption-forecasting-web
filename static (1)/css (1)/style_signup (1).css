@@ -1,0 +1,1182 @@
+/* SIGN-UP PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.sign-up-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.sign-up-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.sign-up-page .left-top {
+  margin-bottom: 20px;
+}
+
+.sign-up-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.sign-up-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.sign-up-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.sign-up-page .left-image img {
+  width: 90%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.sign-up-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* agar isi tidak selalu center vertikal */
+  gap: 29px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.sign-up-page .right-section h1 {
+  font-size: 60px;
+  font-weight: 700;
+  margin-top: 18px;  /* tambahin jarak atas */
+  margin-bottom: 10px;
+  color: #000000;
+}
+
+/* Form container */
+.sign-up-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px; /* batas maksimum */
+}
+
+/* Form field */
+.sign-up-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF), /* isi field = ungu muda */
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%); /* garis luar */
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ICON di kiri input */
+.sign-up-page .form-field img {
+  background-color: #DEDFE2; /* latar belakang icon */
+  padding: 8px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 40px;
+  height: 40px;
+}
+
+/* Input */
+.sign-up-page .form-field input,
+.sign-up-page .form-field select {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.sign-up-page .form-field input:focus,
+.sign-up-page .form-field select:focus {
+  color: rgba(0, 0, 0, 0.36);
+  transform: translateY(-1px);
+}
+
+.sign-up-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Tambahan: STYLE untuk Select & Date */
+.sign-up-page .form-field select,
+.sign-up-page .form-field input[type="date"] {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.36); /* Sama dengan input text */
+}
+
+/* Tombol submit */
+.sign-up-page .submit-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 15px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.sign-up-page .submit-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.sign-up-page .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.sign-up-page .progress-indicator {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+/* Link login */
+.sign-up-page .login-link {
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  color: rgba(0, 0, 0, 0.36); /* Warna teks deskriptif, bisa disesuaikan */
+  margin-top: 14px;
+}
+
+.sign-up-page .login-link a {
+  color: #6AADFA; /* Warna link, dari gradient utama */
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.3s ease;
+}
+
+.sign-up-page .login-link a:hover {
+  color:  #3B4DA6;
+  text-decoration: underline;
+}
+
+/* SIGN-UP-BIODATA PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.signup-biodata-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.signup-biodata-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.signup-biodata-page .left-top {
+  margin-bottom: 2px;
+}
+
+.signup-biodata-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.signup-biodata-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.signup-biodata-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.signup-biodata-page .left-image img {
+  width: 90%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.signup-biodata-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* agar isi tidak selalu center vertikal */
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.signup-biodata-page .biodata-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.36);
+  margin-top: 30px;
+  margin-bottom: 3px; /* Jarak ke bawah kecil aja */
+}
+
+.signup-biodata-page .biodata-instruction {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 2vw, 23px);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.94);
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+/* Form container */
+.signup-biodata-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px; /* batas maksimum */
+}
+
+/* Form field */
+.signup-biodata-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 27px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF), /* isi field = ungu muda */
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%); /* garis luar */
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ICON di kiri input */
+.signup-biodata-page .form-field img {
+  background-color: #DEDFE2; /* latar belakang icon */
+  padding: 8px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 40px;
+  height: 40px;
+}
+
+/* Input */
+.signup-biodata-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.signup-biodata-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.36);
+  transform: translateY(-1px);
+}
+
+.signup-biodata-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Tombol submit */
+.signup-biodata-page .create-account-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 15px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.signup-biodata-page .create-account-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.sign-biodata-page .progress-indicator {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.signup-biodata-page .info-text {
+  font-size: 17px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.signup-biodata-page .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+
+/* ACTIVATION SUCCESS PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.activation-success-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.activation-success-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.activation-success-page .left-top {
+  margin-bottom: 2px;
+}
+
+.activation-success-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.activation-success-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.activation-success-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.activation-success-page .left-image img {
+  width: 80%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.activation-success-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* agar isi tidak selalu center vertikal */
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.activation-success-page .success-title {
+  font-size: 35px;
+  font-weight: 600;
+  text-align: center;
+  align-self: center;
+  color: #000000;
+  margin-top: 70px;
+  margin-bottom: 3px; /* Jarak ke bawah kecil aja */
+}
+
+.activation-success-page .success-message {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 2vw);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.36);
+  text-align: center;
+  margin-top: 27px;
+  margin-bottom: 3px;
+}
+
+.activation-success-page .success-subtext {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 2vw);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.36);
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 28px;
+}
+
+.activation-success-container .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tombol submit */
+.activation-success-container .continue-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  line-height: 56px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.activation-success-container .continue-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.activation-success-page .progress-indicator {
+  font-size: 0.9rem;
+  color: #444;
+  margin-top: 30px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.activation-success-page .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* SIGNUP-PHONE-NUMBER PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.signup-phone-number-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.signup-phone-number-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.signup-phone-number-page .left-top {
+  margin-bottom: 20px;
+}
+
+.signup-phone-number-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.signup-phone-number-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.signup-phone-number-page .left-image {
+  max-height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.signup-phone-number-page .left-image img {
+  width: 65%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.signup-phone-number-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center; /* Tengahin isi form */
+  gap: 29px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.signup-phone-number-page .phone-number-instruction {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 2vw, 23px);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.94);
+  text-align: center;
+  margin-top: 70px;
+  margin-bottom: 20px;
+}
+
+.signup-phone-number-page .info-text {
+  font-size: 19px;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 9px;
+}
+
+/* Form container */
+.signup-phone-number-page .form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 700%; /* atau 900px kalau mau ada batas */
+}
+
+/* Form field */
+.signup-phone-number-page .form-field {
+  display: flex;
+  align-items: center;
+  width: 90%;
+  max-width: 100%;
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF),
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+
+/* ICON di kiri input */
+.signup-phone-number-page .form-field img {
+  background-color: #DEDFE2; /* latar belakang icon */
+  padding: 10px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 40px;
+  height: 40px;
+}
+
+/* Input */
+.signup-phone-number-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.signup-phone-number-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.36);
+  transform: translateY(-1px);
+}
+
+.signup-phone-number-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Tombol submit */
+.signup-phone-number-page .submit-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 9px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.signup-phone-number-page .submit-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.signup-phone-number-page .progress-indicator {
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.65);
+  margin-top: 30px;
+  margin-bottom: 3px;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+}
+
+.signup-phone-number-page  .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* VERIFICATION CODE PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.verification-code-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.verification-code-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0;
+}
+
+.verification-code-page .left-top {
+  margin-bottom: 20px;
+}
+
+.verification-code-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px);
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.verification-code-page .title .bold {
+  font-weight: 700;
+}
+
+.verification-code-page .left-image {
+  max-height: 550px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.verification-code-page .left-image img {
+  width: 80%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* RIGHT SECTION */
+.verification-code-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+.verification-code-page .verification-instruction {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 2vw, 35px);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.94);
+  text-align: center;
+  margin-top: 90px;
+  margin-bottom: 10px;
+}
+
+.verification-code-page .info-text {
+  font-size: 19px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 5x;
+}
+
+.verification-code-page .resend-text {
+  font-size: 19px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+  margin-top: -20px;
+  margin-bottom: 5x;
+}
+
+.verification-code-page .resend-text a {
+  color: #007BFF;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.verification-code-page .resend-text a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.verification-code-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 700px;
+  align-self: center;
+}
+
+.verification-code-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 13px;
+  width: 90%;
+  align-self: center;
+  max-width: 100%;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF),
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.verification-code-page .form-field img {
+  background-color: #DEDFE2;
+  padding: 10px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 40px;
+  height: 40px;
+}
+
+.verification-code-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.verification-code-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.8);
+  transform: translateY(-1px);
+}
+
+.verification-code-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Submit button */
+.verification-code-page .submit-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 30px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.verification-code-page .submit-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.verification-code-page .progress-indicator {
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.65);
+  margin-top: 30px;
+  margin-bottom: 3px;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+}
+
+.verification-code-page  .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* VERIFIED PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.verified-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.verified-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0;
+}
+
+.verified-page .left-top {
+  margin-bottom: 20px;
+}
+
+.verified-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px);
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.verified-page .title .bold {
+  font-weight: 700;
+}
+
+.verified-page .left-image {
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.verified-page .left-image img {
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* RIGHT SECTION */
+.verified-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+.verified-container {
+  text-align: center;
+  padding: 60px 40px; /* Tambahkan padding atas bawah */
+  border-radius: 20px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  max-width: 520px;
+  margin: auto;
+}
+
+.verified-message {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 30px;
+  line-height: 1.5; /* Tambahkan line-height agar teks tidak rapat */
+  text-align: center;
+  background: linear-gradient(
+    to right,
+    #000000e0 0%,
+    #116759f0 50%,
+    #0E0447ff 100%
+  );
+  background-clip: text;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+
+.verified-message span {
+  font-weight: 700;
+  color: #205295;
+}
+
+/* Login button */
+.verified-login-btn {
+  background: linear-gradient(to right, #002C7D, #49BFBF);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 40px;
+}
+
+.verified-login-btn:hover {
+  background: #1c6ea4;
+  opacity: 0.9;
+}
+
+
+
+
+
+/* === RESPONSIVE TABLET (max-width: 1024px) === */
+@media (max-width: 1024px) {
+  .sign-up-page {
+    flex-direction: column;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+  }
+
+    .right-section {
+    padding-top: 32px; 
+  }
+
+  .right-section h1 {
+    font-size: 48px;
+  }
+
+  .submit-button {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+/* === RESPONSIVE HP (max-width: 600px) === */
+@media (max-width: 600px) {
+  .right-section h1 {
+    font-size: 36px;
+  }
+
+  .form-field {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-field img {
+    margin-bottom: 10px;
+  }
+
+  .submit-button {
+    font-size: 18px;
+    height: 50px;
+  }
+}

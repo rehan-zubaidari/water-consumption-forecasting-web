@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <!-- buat tampilan responsive di HP/table -->
+  <title>Sign Up</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">  <!-- buat impor style huruf -->
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_signup.css') }}">
+</head>
+<body>
+<div class="sign-up-page">
+  <div class="left-section">
+    <div class="left-top">
+      <h1 class="title">
+        <span>Welcome to</span><br />
+        <span class="bold">Access Clean Water Forecasts</span><br />
+        <span>at</span> <span class="bold">PERUMDA</span> <span>Air Minum</span><br />
+        <span class="bold">TIRTA TAMIANG</span><br />
+        <span>in</span> <span class="bold">KARANG BARU</span><br />
+      </h1>
+    </div>
+    <div class="left-image">
+      <img src="{{ url_for('static', filename='img/tampilan_signup_page.svg') }}" alt="Signup Illustration" />
+    </div>
+  </div>
+
+  <div class="right-section">
+      <div class="progress-indicator">
+          Step 1 of 5
+      </div>
+    <h1>Sign Up</h1>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+          {% for message in messages %}
+            <p class="flash-text">{{ message }}</p>
+          {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+    <form action="{{ url_for('signup') }}" method="post" class="form-container">
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_full_name.svg') }}" alt="Full Name Icon" />
+        <input type="text" name="full_name" placeholder="Enter your full name"required autocomplete="name" />
+      </div>
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_employee_id.svg') }}" alt="Employee ID Icon" />
+        <input type="text" name="employee_id" placeholder="Employee ID" required autocomplete="off" />
+      </div>
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_birth_date.svg') }}" alt="Birth Date Icon" />
+        <input type="date" name="birth_date" required autocomplete="bday" />
+      </div>
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_gender.svg') }}" alt="Gender Icon" />
+        <select name="gender"  required autocomplete="sex">
+          <option value="">Enter your gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <button type="submit" class="submit-button">Submit</button>
+      <p class="login-link">Already have an account? <a href="/login">Log In</a></p>
+    </form>
+  </div>
+</div> 
+</body>
+</html>

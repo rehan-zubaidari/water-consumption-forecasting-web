@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Preview Data Konsumsi Pelanggan Air Bersih <span class="emoji">🔍</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Preview Data</h1>
+  <p>Berikut adalah 10 baris pertama dari file <strong>{{ filename }}</strong>.  
+     Pastikan format dan datanya sudah sesuai sebelum disimpan ke database</p>
+</div>
+
+
+  <div class="preview-table">
+    {% for table in tables %}
+      {{ table|safe }}
+    {% endfor %}
+  </div>
+
+  <form method="POST" action="{{ url_for('confirm_upload', filename=filename) }}">
+    <button type="submit" class="btn main-btn-preview">Konfirmasi & Simpan ke Database✅</button>
+  </form>
+
+  <!-- Tombol kembali kalau user mau ganti file -->
+  <div class="template-download-preview">
+    <a href="{{ url_for('unggah_data_konsumsi') }}" class="btn main-btn">
+      Unggah File Lain⬅️
+    </a>
+  </div>
+{% endblock %}

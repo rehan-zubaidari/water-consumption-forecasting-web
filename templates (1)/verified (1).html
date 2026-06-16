@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup Verified Page</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_signup.css') }}">
+</head>
+<body>
+<div class="verified-page">
+  <div class="left-section">
+    <div class="left-top">
+      <h1 class="title">
+        <span>Welcome to</span><br />
+        <span class="bold">Access Clean Water Forecasts</span><br />
+        <span>at</span> <span class="bold">PERUMDA</span> <span>Air Minum</span><br />
+        <span class="bold">TIRTA TAMIANG</span><br />
+        <span>in</span> <span class="bold">KARANG BARU</span><br />
+      </h1>
+    </div>
+    <div class="left-image">
+      <img src="{{ url_for('static', filename='img/verified_page.svg') }}" alt="Verified Illustration" />
+    </div>
+  </div>
+
+    <div class="right-section">
+    <div class="verified-container">
+    <div class="verified-message">
+      Your account has been <span>registered and verified</span>, please login now
+    </div>
+    <a href="{{ url_for('login') }}" class="verified-login-btn">Log In</a>
+  </div>
+  </div>
+</div>
+</body>
+</html>

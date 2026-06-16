@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Detail Forecast Pelanggan <span class="emoji">📊</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+<div class="detail-page-header">
+  <h1>Detail Forecast</h1>
+  <p>Berikut Informasi detail hasil forecast terpilih beserta evaluasi modelnya</p>
+</div>
+
+<!-- Metadata Forecast -->
+<div class="forecast-metadata">
+  <ul>
+    <li><span class="label">ID</span><span class="value">: {{ forecast.id }}</span></li>
+    <li><span class="label">Tanggal</span><span class="value">: {{ forecast.tanggal }}</span></li>
+    <li><span class="label">Periode</span><span class="value">: {{ forecast.periode }}</span></li>
+    <li><span class="label">Rute</span><span class="value">: {{ forecast.rute or '-' }}</span></li>
+    <li><span class="label">Kode</span><span class="value">: {{ forecast.kode or '-' }}</span></li>
+    <li><span class="label">Kategori Golongan</span><span class="value">: {{ forecast.kategori_golongan or '-' }}</span></li>
+    <li><span class="label">Jenis Bangunan</span><span class="value">: {{ forecast.jenis_bangunan or '-' }}</span></li>
+    <li><span class="label">Prediksi (M³)</span><span class="value">: {{ forecast.prediksi }}</span></li>
+    <li><span class="label">Aktual (M³)</span><span class="value">: {{ forecast.aktual }}</span></li>
+    <li><span class="label">Tanggal Entry</span><span class="value">: {{ forecast.tanggal_entry }}</span></li>
+  </ul>
+</div>
+
+<!-- Grafik Perbandingan -->
+<div class="forecast-chart-wrapper">
+  <h3>Grafik Bar Prediksi vs Aktual</h3>
+  <canvas id="forecastChartBar" style="width:100%; height:400px;"></canvas>
+
+  <h3>Grafik Line Prediksi vs Aktual</h3>
+  <canvas id="forecastChartLine" style="width:100%; height:400px;"></canvas>
+
+  <!-- Hidden canvas for PDF -->
+  <canvas id="forecastChartHidden" style="display:none;"></canvas>
+</div>
+
+
+<!-- Mini Tabel (kalau ada data tambahan) -->
+{% if related_data %}
+<div class="detail-table-wrapper">
+  <h3>Riwayat Forecast Terkait</h3>
+
+<!-- Tombol Aksi -->
+<div class="action-buttons">
+  <button type="button" class="btn" onclick="downloadDetailCSV()">Download CSV</button>
+  <button type="button" class="btn" onclick="downloadDetailExcel()">Download Excel</button>
+  <button type="button" class="btn" onclick="downloadDetailPDF()">Download PDF</button>
+</div>
+
+  <table class="detail-table">
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Periode</th>
+        <th>Prediksi (M³)</th>
+        <th>Aktual (M³)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in related_data %}
+      <tr>
+    <td>{{ row.tanggal }}</td>
+    <td>{{ row.periode }}</td>
+    <td>{{ row.prediksi }}</td>
+    <td>
+  {% if row.aktual != "" and row.aktual is not none %}
+    {{ row.aktual }}
+  {% else %}
+    -
+  {% endif %}
+</td>
+  </tr>
+  {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="action-back-button">
+  <a href="{{ url_for('forecast_history.forecasting_page') }}" class="btn"> ⬅ Kembali</a>
+</div>
+
+<!-- Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+
+<script>
+// Data dari backend (langsung satu objek + optional related_data)
+const forecastData = JSON.parse('{{ forecast_json | safe }}') || {};
+const relatedData = JSON.parse('{{ related_data_json | safe }}') || {};
+
+// ---- Bar Chart ----
+const ctxBar = document.getElementById("forecastChartBar").getContext("2d");
+const barChart = new Chart(ctxBar, {
+  type: "bar",
+  data: {
+    labels: ["Prediksi", "Aktual"],
+    datasets: [{
+      label: "Konsumsi Air (M³)",
+      data: [forecastData.prediksi || 0, forecastData.aktual || 0],
+      backgroundColor: ["rgba(255, 87, 51, 0.7)", "rgba(51, 123, 255, 0.7)"],
+      borderColor: ["rgba(255, 87, 51, 1)", "rgba(51, 123, 255, 1)"],
+      borderWidth: 2,
+      borderRadius: 8
+    }]
+  },
+options: {
+    responsive: true,
+    plugins: {
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        font: {
+          size: 14,
+          weight: 'bold',
+          style: 'italic'
+        },
+        color: function(context) {
+          return context.dataIndex === 0 ? "maroon" : "darkblue";
+        },
+        formatter: (value) => value.toLocaleString()
+      }
+    }
+  },
+  plugins: [ChartDataLabels]
+});
+
+
+// ---- Line Chart ----
+const ctxLine = document.getElementById("forecastChartLine").getContext("2d");
+const lineChart = new Chart(ctxLine, {
+  type: "line",
+  data: {
+    labels: ["Prediksi", "Aktual"],
+    datasets: [{
+      label: "Konsumsi Air (M³)",
+      data: [forecastData.prediksi || 0, forecastData.aktual || 0],
+      borderColor: "rgba(75,192,192,1)",
+      backgroundColor: "rgba(75,192,192,0.2)",
+      fill: true,
+      tension: 0.3,
+      pointBackgroundColor: "#fff",
+      pointBorderColor: "rgba(75,192,192,1)",
+      pointRadius: 6
+    }]
+  },
+   options: {
+    responsive: true,
+    plugins: {
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        font: {
+          size: 14,
+          weight: 'bold',
+          style: 'italic'
+        },
+        color: "darkgreen",
+        formatter: (value) => value.toLocaleString()
+      }
+    }
+  },
+  plugins: [ChartDataLabels]
+});
+
+// ---- Hidden chart for PDF ----
+const ctxHidden = document.getElementById("forecastChartHidden").getContext("2d");
+const hiddenChart = new Chart(ctxHidden, {
+  type: "bar",
+  data: barChart.data,
+  options: barChart.options,
+  plugins: [ChartDataLabels]
+});
+
+
+// ----- Download CSV (Detail) -----
+function downloadDetailCSV() {
+  try {
+    const rows = [
+      ["PEMERINTAH KABUPATEN ACEH TAMIANG"],
+      ["PERUSAHAAN UMUM DAERAH AIR MINUM TIRTA TAMIANG"],
+      ["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"],
+      [],
+      ["Detail Forecast Konsumsi Air"],
+      [],
+      [
+        "Tanggal",
+        "Periode",
+        "Rute",
+        "Kode",
+        "Kategori Golongan",
+        "Jenis Bangunan",
+        "Prediksi (M³)",
+        "Aktual (M³)"
+      ]
+    ];
+
+    // Data utama
+    rows.push([
+      forecastData.tanggal || "-",
+      forecastData.periode || "-",
+      forecastData.rute || "-",
+      forecastData.kode || "-",
+      forecastData.kategori_golongan || "-",
+      forecastData.jenis_bangunan || "-",
+      forecastData.prediksi || "-",
+      forecastData.aktual || "-"
+    ]);
+
+    // Related data
+    relatedData.forEach(d => {
+      rows.push([
+        d.tanggal || "-",
+        d.periode || "-",
+        d.rute || "-",
+        d.kode || "-",
+        d.kategori_golongan || "-",
+        d.jenis_bangunan || "-",
+        d.prediksi || "-",
+        d.aktual || "-"
+      ]);
+    });
+
+    // Join jadi CSV pakai delimiter ";"
+    const csvContent = rows.map(r => r.join(";")).join("\n");
+
+    // Simpan file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "detail_forecast.csv");
+  } catch (e) {
+    console.error("Error CSV:", e);
+  }
+}
+
+
+// ----- Download Excel (Detail) -----
+async function downloadDetailExcel() {
+  if (!forecastData) return;
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("DetailForecast");
+
+  // === Kop Surat ===
+  sheet.addRow(["PEMERINTAH KABUPATEN ACEH TAMIANG"]);
+  sheet.addRow(["PERUSAHAAN UMUM DAERAH AIR MINUM TIRTA TAMIANG"]);
+  sheet.addRow(["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"]);
+  sheet.addRow([]);
+  sheet.addRow(["Detail Forecast Konsumsi Air"]);
+  sheet.addRow([]);
+
+  // Style kop
+  sheet.getRow(1).font = { bold: true, color: { argb: "00008B" } };
+  sheet.getRow(2).font = { bold: true, color: { argb: "006400" } };
+  sheet.getRow(3).font = { color: { argb: "808080" } };
+  sheet.getRow(5).font = { bold: true };
+
+  // Header tabel
+  const headerRow = sheet.addRow([
+    "Tanggal",
+    "Periode",
+    "Rute",
+    "Kode",
+    "Kategori Golongan",
+    "Jenis Bangunan",
+    "Prediksi (M³)",
+    "Aktual (M³)"
+  ]);
+  headerRow.font = { bold: true };
+  headerRow.alignment = { horizontal: "center" };
+  headerRow.eachCell(cell => {
+    cell.border = { top:{style:"thin"}, left:{style:"thin"}, bottom:{style:"thin"}, right:{style:"thin"} };
+    cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"D9E1F2"} };
+  });
+
+  // Data utama
+  const mainRow = sheet.addRow([
+    forecastData.tanggal || "-",
+    forecastData.periode || "-",
+    forecastData.rute || "-",
+    forecastData.kode || "-",
+    forecastData.kategori_golongan || "-",
+    forecastData.jenis_bangunan || "-",
+    forecastData.prediksi || "-",
+    forecastData.aktual || "-"
+  ]);
+  mainRow.eachCell(cell => {
+    cell.border = { top:{style:"thin"}, left:{style:"thin"}, bottom:{style:"thin"}, right:{style:"thin"} };
+    cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"F9F9F9"} };
+  });
+
+  // Data related
+  relatedData.forEach((d, index) => {
+    const row = sheet.addRow([
+      d.tanggal || "-",
+      d.periode || "-",
+      d.rute || "-",
+      d.kode || "-",
+      d.kategori_golongan || "-",
+      d.jenis_bangunan || "-",
+      d.prediksi || "-",
+      d.aktual || "-"
+    ]);
+    row.eachCell(cell => {
+      cell.border = { top:{style:"thin"}, left:{style:"thin"}, bottom:{style:"thin"}, right:{style:"thin"} };
+      if (index % 2 === 0) {
+        cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"F2F2F2"} };
+      }
+    });
+  });
+
+  // Auto width
+  sheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, cell => {
+      const len = cell.value ? cell.value.toString().length : 10;
+      if (len > maxLength) maxLength = len;
+    });
+    column.width = maxLength + 5;
+  });
+
+  // Download
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  });
+  saveAs(blob, "detail_forecast.xlsx");
+}
+
+
+
+function downloadDetailPDF() {
+  try {
+    if (!forecastData) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "landscape", unit: "cm", format: "a4" });
+    const margin = 1;
+    let startY = margin;
+
+    // === Tambah Logo ===
+    const img = new Image();
+    img.src = '/static/img/logo_perumda.png'; // sesuaikan path logo
+    img.onload = function() {
+      doc.addImage(img, 'PNG', margin, margin, 2.5, 2.5);
+
+      // === Kop Surat ===
+      const headerX = margin + 3.2; // logo + jarak
+      doc.setFontSize(17);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 139);
+      doc.text("PEMERINTAH KABUPATEN ACEH TAMIANG", headerX, margin + 1, { align: "left" });
+
+      doc.setFontSize(15);
+      doc.setTextColor(0, 100, 0);
+      doc.text("PERUMDA AIR MINUM TIRTA TAMIANG", headerX, margin + 1.8, { align: "left" });
+
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(80, 80, 80);
+      doc.text("Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992, Fax. (0641) 332992, Provinsi Aceh",
+              headerX, margin + 2.6, { align: "left" });
+
+      // Garis bawah kop surat
+      doc.setLineWidth(0.05);
+      doc.line(margin, margin + 3.2, doc.internal.pageSize.getWidth() - margin, margin + 3.2);
+
+      // === Judul Laporan ===
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text("Detail Forecast Konsumsi Air", doc.internal.pageSize.getWidth()/2, margin + 4.5, { align: "center" });
+
+      // === Posisi start tabel ===
+      startY = margin + 5.5;
+
+      // --- Siapkan body data tabel ---
+      const bodyData = [
+        [forecastData.tanggal, forecastData.periode, forecastData.rute || "-", forecastData.kode || "-",
+        forecastData.kategori_golongan || "-", forecastData.jenis_bangunan || "-", forecastData.prediksi, forecastData.aktual]
+      ];
+      relatedData.forEach(row => {
+        bodyData.push([
+          row.tanggal, row.periode, row.rute || "-", row.kode || "-",
+          row.kategori_golongan || "-", row.jenis_bangunan || "-", row.prediksi, row.aktual
+        ]);
+      });
+
+    // === Tabel ===
+    doc.autoTable({
+      startY,
+      head:[["Tanggal","Periode","Rute", "Kode","Kategori Golongan","Jenis Bangunan","Prediksi (M³)","Aktual (M³)"]],
+      body: bodyData,
+      margin:{ left: margin, right: margin },
+      styles:{ fontSize:11 },
+      theme:'grid',
+      didDrawPage: (data) => {
+        startY = data.cursor.y + 1;
+      }
+    });
+
+    // === Grafik Bar ===
+    const barImg = barChart.toBase64Image();
+    let chartY = startY;
+    if (chartY + 10 > doc.internal.pageSize.getHeight() - margin) {
+      doc.addPage();
+      chartY = margin + 1;
+    }
+    const chartWidth = doc.internal.pageSize.getWidth() - 2*margin;
+    const chartHeight = 10;
+    doc.addImage(barImg, 'PNG', margin, chartY, chartWidth, chartHeight);
+
+    // === Grafik Line ===
+    chartY += chartHeight + 1; // beri jarak antar chart
+    if (chartY + chartHeight > doc.internal.pageSize.getHeight() - margin) {
+      doc.addPage();
+      chartY = margin + 1;
+    }
+    const lineImg = lineChart.toBase64Image();
+    doc.addImage(lineImg, 'PNG', margin, chartY, chartWidth, chartHeight);
+
+    // === Simpan PDF ===
+    doc.save("detail_forecast.pdf");
+  };
+ } catch(e) {
+    console.error("Error PDF:", e);
+  }
+}
+</script>
+
+{% endblock %}

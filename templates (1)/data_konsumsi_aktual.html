@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-konsumsi">
+    <h1 class="gradient-text">
+        Data Konsumsi Aktual Pelanggan<span class="emoji">💧</span>
+    </h1>
+  </header>
+{% endblock %}
+
+
+{% block content %}
+<div class="filter-button-container">
+    <button id="toggleFilterButton" class="btn-filter">Tampilkan Filter</button>
+</div>
+
+<!-- Container filter yang akan disembunyikan -->
+<div id="filterContainer" class="hidden">
+    <form method="GET" action="{{ url_for('data_konsumsi_aktual') }}" class="filter-form">
+        <div class="filter-group">
+            <label for="tahun">Tahun:</label>
+            <select name="tahun" id="tahun">
+                <option value="">Pilih</option>
+                {% for t in daftar_tahun %}
+                    <option value="{{ t }}" {% if request.args.get('tahun') == t %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="bulan">Bulan:</label>
+             <select name="bulan" id="bulan">
+                <option value="">Pilih</option>
+                {% for b in daftar_bulan %}
+                    <option value="{{ b }}" {% if request.args.get('bulan') == b %}selected{% endif %}>{{ b }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="rute">Rute:</label>
+                <select name="rute" id="rute">
+                <option value="">Pilih</option>
+                {% for r in daftar_rute %}
+                    <option value="{{ r }}" {% if request.args.get('rute') == r %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="kode">Kode:</label>
+                <select name="kode" id="kode">
+                <option value="">Pilih</option>
+                {% for k in daftar_kode %}
+                    <option value="{{ k }}" {% if request.args.get('kode') == k %}selected{% endif %}>{{ k }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="kategori_golongan">Kategori Golongan:</label>
+                <select name="kategori_golongan" id="kategori_golongan">
+                <option value="">Pilih</option>
+                {% for g in daftar_kategori_golongan %}
+                    <option value="{{ g }}" {% if request.args.get('kategori_golongan') == g %}selected{% endif %}>{{ g }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="jenis_bangunan">Jenis Bangunan:</label>
+                <select name="jenis_bangunan" id="jenis_bangunan">
+                <option value="">Pilih</option>
+                {% for j in daftar_jenis_bangunan %}
+                    <option value="{{ j }}" {% if request.args.get('jenis_bangunan') == j %}selected{% endif %}>{{ j }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    <button type="submit">Terapkan Filter</button>
+        <a href="{{ url_for('data_konsumsi_aktual') }}" class="reset-button">Reset</a>
+    </form>
+</div>
+
+<div id="loader" class="loader hidden"></div>
+    {% block flash %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul id="flash-messages" class="flash-messages-aktual">
+                    {% for category, message in messages %}
+                        <li class="alert alert-{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    {% endblock %}
+
+<!-- Wrapper Download -->
+<div class="download-wrapper">
+  <button class="btn main-btn-forecast">Download Data ⬇</button>
+  <div class="dropdown-content">
+    <button onclick="downloadCSV()">CSV</button>
+    <button onclick="downloadExcel()">Excel</button>
+    <button onclick="downloadPDF()">PDF</button>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+const mainBtn = document.querySelector(".download-wrapper .main-btn-forecast");
+const wrapper = document.querySelector(".download-wrapper");
+
+mainBtn.addEventListener("click", () => {
+  wrapper.classList.toggle("show"); // toggle tampil/tidak
+});
+
+// klik di luar untuk tutup dropdown
+window.addEventListener("click", (e) => {
+  if (!wrapper.contains(e.target)) {
+    wrapper.classList.remove("show");
+  }
+});
+</script>
+
+    <table class="tabel-konsumsi">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tahun</th>
+                <th>Bulan</th>
+                <th>Rute</th>
+                <th>Kode</th>
+                <th>Jenis Bangunan</th>
+                <th>Jumlah SR</th>
+                <th>Kategori Golongan</th>
+                <th>Konsumsi (M³)</th>
+            </tr>
+        </thead>
+        <tbody>
+             {% for row in data %}
+            <tr>
+                <td>{{ loop.index + start_index }}</td>
+                <td>{{ row.tahun }}</td>
+                <td>{{ row.bulan }}</td>
+                <td>{{ row.rute }}</td>
+                <td>{{ row.kode }}</td>
+                <td>{{ row.jenis_bangunan }}</td>
+                <td>{{ row.jumlah_sr }}</td>
+                <td>{{ row.kategori_golongan }}</td>
+                <td>{{ row.konsumsi }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('data_konsumsi_aktual', page=1, **filters) }}">&laquo; First</a>
+                <a href="{{ url_for('data_konsumsi_aktual', page=page-1, **filters) }}">&lt; Prev</a>
+            {% endif %}
+
+            <span>Page {{ page }} of {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('data_konsumsi_aktual', page=page+1, **filters) }}">Next &gt;</a>
+                <a href="{{ url_for('data_konsumsi_aktual', page=total_pages, **filters) }}">Last &raquo;</a>
+            {% endif %}
+        </div>
+
+<script src="{{ url_for('static', filename='js/filter-toggle.js') }}"></script>
+
+    <div class="chart-header">
+        <h2>Visualisasi Konsumsi Aktual</h2>
+        <button id="toggleChartBtn" class="toggle-btn">Ganti Chart🔄</button>
+    </div>
+
+    <!-- Dropdown untuk download chart -->
+<div class="chart-download-wrapper">
+  <button class="btn main-btn-forecast" onclick="toggleChartDropdown()">⬇ Download Chart</button>
+  <div class="chart-dropdown-content">
+    <button onclick="downloadChart('png')">Download as PNG</button>
+    <button onclick="downloadChart('jpeg')">Download as JPEG</button>
+    <button onclick="downloadChart('pdf')">Download as PDF</button>
+  </div>
+</div>
+
+<script>
+function toggleChartDropdown() {
+  document.querySelector('.chart-download-wrapper').classList.toggle('show');
+}
+
+// Tutup dropdown kalau klik di luar
+window.addEventListener('click', function(e) {
+  const wrapper = document.querySelector('.chart-download-wrapper');
+  if (!wrapper.contains(e.target)) {
+    wrapper.classList.remove('show');
+  }
+});
+
+// Fungsi download chart
+function downloadChart(type='png') {
+  if (!chart) return;
+
+  if (type === 'png') {
+    const link = document.createElement("a");
+    link.href = chart.toBase64Image();
+    link.download = "konsumsi_chart.png";
+    link.click();
+  } else if (type === 'jpeg') {
+    const link = document.createElement("a");
+    link.href = chart.toBase64Image("image/jpeg", 1.0);
+    link.download = "konsumsi_chart.jpeg";
+    link.click();
+  } else if (type === 'pdf') {
+    const doc = new jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const margin = 20;
+    const pdfWidth = doc.internal.pageSize.getWidth();
+    const pdfHeight = doc.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth - 2*margin;
+    const imgHeight = pdfHeight - 4*margin;
+    const imgData = chart.toBase64Image();
+    doc.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+    doc.save("konsumsi_chart.pdf");
+  }
+}
+</script>
+
+<canvas id="konsumsiChart"></canvas>
+
+{% block scripts %}
+<!-- Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+
+<script>
+  const chartLabels = JSON.parse('{{ chart_labels|safe }}');
+  const chartData = JSON.parse('{{ chart_data|safe }}');
+
+  const ctx = document.getElementById('konsumsiChart').getContext('2d');
+
+  // Buat gradasi biru elegan
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, 'rgba(0, 123, 255, 0.6)');
+  gradient.addColorStop(1, 'rgba(0, 123, 255, 0.05)');
+
+  // Variabel global chart & type
+  let chartType = "line";
+  let chart = new Chart(ctx, {
+    type: chartType,
+    data: {
+      labels: chartLabels,
+      datasets: [{
+        label: 'Konsumsi Air (M³)',
+        data: chartData,
+        borderColor: '#007BFF',
+        backgroundColor: gradient,
+        fill: chartType === "line",
+        tension: 0.4,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#007BFF',
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        pointHoverBackgroundColor: '#007BFF',
+        pointHoverBorderColor: '#ffffff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          titleColor: '#fff',
+          bodyColor: '#e2e8f0',
+          padding: 10,
+          callbacks: {
+            label: function(context) {
+              return context.formattedValue.toLocaleString('id-ID') + ' m³';
+            }
+          }
+        }
+      },
+      scales: {
+    x: { 
+        ticks: {
+            color: '#555',
+            font: { family: 'Poppins', size: 13, weight: 'bold' }
+        },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+    },
+    y: { 
+        beginAtZero: true, 
+        ticks: { 
+            color: '#555', 
+            font: { family: 'Poppins', size: 13, weight: 'bold' },
+            callback: v => v.toLocaleString('id-ID') 
+        },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+        }
+      },
+      animation: { duration: 2000, easing: 'easeOutQuart' }
+    }
+  });
+
+  // Toggle Line <-> Bar
+  document.getElementById("toggleChartBtn").addEventListener("click", () => {
+    chart.destroy();
+    chartType = chartType === "line" ? "bar" : "line";
+    chart = new Chart(ctx, {
+      type: chartType,
+      data: {
+        labels: chartLabels,
+        datasets: [{
+          label: "Konsumsi Air (m³)",
+          data: chartData,
+          borderColor: "#4e73df",
+          backgroundColor: chartType === "bar" ? "rgba(78, 115, 223, 0.6)" : gradient,
+          fill: chartType === "line",
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  });
+
+
+// Download semua data
+async function getAllData() {
+  const res = await fetch('/data-konsumsi-aktual/download');
+  return await res.json();
+}
+
+// Download data dengan filter
+async function getFilteredData() {
+  const query = window.location.search;
+  const res = await fetch('/data-konsumsi-aktual/download' + query);
+  return await res.json();
+}
+
+  async function downloadCSV() {
+    const data = await getFilteredData();
+    const rows = [
+      ["PEMERINTAH KABUPATEN ACEH TAMIANG"],
+      ["PERUMDA AIR MINUM TIRTA TAMIANG"],
+      ["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"],
+      [],
+      ["Data Konsumsi Air Aktual"],
+      [],
+      ["No","Tahun","Bulan","Rute","Kode","Jenis Bangunan","Jumlah SR","Kategori Golongan","Konsumsi (M³)"],
+      ...data
+    ];
+
+    const csvContent = rows.map(r => r.join(";")).join("\n");
+    saveAs(new Blob([csvContent], {type:"text/csv;charset=utf-8;"}), "data_konsumsi_aktual.csv");
+  }
+
+  async function downloadExcel() {
+    const data = await getFilteredData();
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("DataKonsumsiAktual");
+
+    sheet.addRow(["PEMERINTAH KABUPATEN ACEH TAMIANG"]);
+    sheet.addRow(["PERUMDA AIR MINUM TIRTA TAMIANG"]);
+    sheet.addRow(["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"]);
+    sheet.addRow([]);
+    sheet.addRow(["Data Konsumsi Air Aktual"]);
+    sheet.addRow([]);
+
+    const headerRow = sheet.addRow(["No","Tahun","Bulan","Rute","Kode","Jenis Bangunan","Jumlah SR","Kategori Golongan","Konsumsi (M³)"]);
+    headerRow.font = { bold:true };
+
+    data.forEach(r => sheet.addRow(r));
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), "data_konsumsi_aktual.xlsx");
+  }
+
+  async function downloadPDF() {
+    const data = await getFilteredData();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({orientation:"landscape", unit:"cm", format:"a4"});
+    const margin=1;
+
+    const img=new Image();
+    img.src='/static/img/logo_perumda.png';
+    img.onload=function(){
+      doc.addImage(img,'PNG',margin,margin,2.5,2.5);
+      const headerX = margin+3.2;
+      doc.setFontSize(17).setFont("helvetica","bold").setTextColor(0,0,139);
+      doc.text("PEMERINTAH KABUPATEN ACEH TAMIANG",headerX,margin+1);
+      doc.setFontSize(15).setTextColor(0,100,0);
+      doc.text("PERUMDA AIR MINUM TIRTA TAMIANG",headerX,margin+1.8);
+      doc.setFontSize(10).setFont("helvetica","normal").setTextColor(80,80,80);
+      doc.text("Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992",headerX,margin+2.6);
+      doc.line(margin,margin+3.2,doc.internal.pageSize.getWidth()-margin,margin+3.2);
+      doc.setFontSize(16).setFont("helvetica","bold").setTextColor(0,0,0);
+      doc.text("Data Konsumsi Air Aktual",doc.internal.pageSize.getWidth()/2,margin+4.5,{align:"center"});
+
+      doc.autoTable({
+        startY: margin+5.5,
+        head:[["No","Tahun","Bulan","Rute","Kode","Jenis Bangunan","Jumlah SR","Kategori Golongan","Konsumsi (M³)"]],
+        body:data,
+        theme:'grid',
+        styles:{ fontSize:10 }
+      });
+
+    // Simpan file
+    doc.save("data_konsumsi_aktual.pdf");
+  };
+}
+</script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup Phone Number</title>
+
+  <!-- Import Font Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Import CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_signup.css') }}">
+</head>
+<body>
+<div class="signup-phone-number-page">
+  <div class="left-section">
+    <div class="left-top">
+      <h1 class="title">
+        <span>Welcome to</span><br />
+        <span class="bold">Access Clean Water Forecasts</span><br />
+        <span>at</span> <span class="bold">PERUMDA</span> <span>Air Minum</span><br />
+        <span class="bold">TIRTA TAMIANG</span><br />
+        <span>in</span> <span class="bold">KARANG BARU</span><br />
+      </h1>
+    </div>
+    <div class="left-image">
+      <img src="{{ url_for('static', filename='img/signup_phone_number_page.svg') }}" alt="Signup Phone Number Illustration" />
+    </div>
+  </div>
+  <div class="right-section">
+    <div class="progress-indicator">
+      Step 4 of 5
+    </div>
+    {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+          {% for message in messages %}
+            <p class="flash-text">{{ message }}</p>
+          {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+    <p class="phone-number-instruction">Congrats Your Account has been Activated!!</p>
+    <p class="info-text">
+      Please input your phone number<br>
+      to receive a verification code
+    </p>
+
+    <form action="{{ url_for('signup_phone_number') }}" method="post" class="form-container">
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_phone_number.svg') }}" alt="Phone Number Icon" />
+        <input 
+          type="tel" 
+          name="phone_number" 
+          placeholder="Enter your new phone number" 
+          required 
+          autocomplete="tel"
+          pattern="[0-9]+" 
+          inputmode="numeric" 
+        />
+      </div>
+      <button type="submit" class="submit-button">Submit</button>
+    </form>
+  </div>
+</div>
+
+<!-- JavaScript: Hapus karakter selain angka -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const phoneInput = document.querySelector('input[name="phone_number"]');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function () {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+  }
+});
+</script>
+</body>
+</html>

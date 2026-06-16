@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Page</title>
+
+  <!-- Import Font Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Import CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+</head>
+<body>
+<div class="login-page">
+  <div class="left-section">
+    <div class="left-top">
+      <h1 class="title">
+        <span>Welcome to</span><br />
+        <span class="bold">Access Clean Water Forecasts</span><br />
+        <span>at</span> <span class="bold">PERUMDA</span> <span>Air Minum</span><br />
+        <span class="bold">TIRTA TAMIANG</span><br />
+        <span>in</span> <span class="bold">KARANG BARU</span><br />
+      </h1>
+    </div>
+    <div class="left-image">
+      <img src="{{ url_for('static', filename='img/tampilan_login_page.svg') }}" alt="Login Illustration" />
+    </div>
+  </div>
+
+  <div class="right-section">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flash-messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <h1>Log In</h1>
+    <form action="{{ url_for('login') }}" method="post" class="form-container">
+        <p class="login-instruction">Email</p>
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_email.svg') }}" alt="Email Icon" />
+        <input type="email" name="email" placeholder="Enter your Email" required />
+      </div>
+
+         <p class="login-instruction">Password</p>
+      <div class="form-field">
+        <img src="{{ url_for('static', filename='img/icon_password.svg') }}" alt="Password Icon" />
+        <input type="password" name="password" placeholder="Enter your password" required />
+      </div>
+                <!-- Ini posisinya setelah password -->
+            <p class="forgot-password-text">
+                <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
+            </p>
+
+            <!-- Tombol login -->
+            <button type="submit" class="login-button">Login</button>
+
+            <!-- Ini setelah tombol login -->
+            <p class="signup-link-text">Don't have an account?</p>
+            <p class="signup-link-text"><a href="/signup">Sign Up Now</a></p>
+    </form>
+  </div>
+</div>
+</body>
+</html>

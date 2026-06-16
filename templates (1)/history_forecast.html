@@ -1,0 +1,506 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Detail History Forecasting Pelanggan<span class="emoji">🗂️</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>History Forecast</h1>
+  <p>Riwayat prediksi yang pernah dijalankan</p>
+</div>
+
+<!-- Filter / Sort -->
+<div class="history-filter">
+  <form method="POST" action="{{ url_for('forecast_history.delete_forecast') }}">
+        <label for="filterRute">Rute:</label>
+        <select id="filterRute" name="rute">
+          <option value="">Pilih</option>
+          {% for rute in all_rutes %}
+            <option value="{{ rute }}">{{ rute }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="filterKode">Kode:</label>
+        <select id="filterKode" name="kode">
+          <option value="">Pilih</option>
+          {% for kode in all_kode %}
+            <option value="{{ kode }}">{{ kode }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="filterKategoriGolongan">Kategori Golongan:</label>
+        <select id="filterKategoriGolongan" name="kategori_golongan">
+          <option value="">Pilih</option>
+            {% for kategori in all_kategori_golongan %}
+            <option value="{{ kategori }}">{{ kategori}}</option>
+            {% endfor %}
+        </select>
+
+        <label for="filterJenisBangunan">Jenis Bangunan:</label>
+        <select id="filterJenisBangunan" name="jenis_bangunan">
+          <option value="">Pilih</option>
+          {% for jenis in all_jenis_bangunan %}
+            <option value="{{ jenis }}">{{ jenis}}</option>
+          {% endfor %}
+        </select>
+
+  <label for="filterDate">Tanggal:</label>
+  <input type="month" id="filterDate"  name="tanggal">
+
+  <button type="button" class="btn" id="applyFilter">Apply</button>
+  <button type="button" class="btn" id="resetFilter">Reset</button>
+  <button type="button" class="btn btn-danger" id="deleteForecastBtn">Hapus Forecast</button>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById('deleteForecastBtn').addEventListener('click', function(){
+    const rute = document.getElementById('filterRute').value;
+    const kode = document.getElementById('filterKode').value;
+    const kategori = document.getElementById('filterKategoriGolongan').value;
+    const jenis = document.getElementById('filterJenisBangunan').value;
+    const tanggal = document.getElementById('filterDate').value;
+
+    if(!rute && !kode && !kategori && !jenis && !tanggal){
+        Swal.fire({
+            icon: 'warning',
+            title: 'Peringatan',
+            text: 'Pilih minimal 1 filter sebelum menghapus!'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: "Apakah kamu yakin ingin menghapus forecast sesuai filter yang dipilih?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit form secara manual
+            this.closest('form').submit();
+        }
+    });
+});
+</script>
+</div>
+
+
+                  {% block flash %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                       <ul id="flash-messages" class="flash-messages-history">
+                          {% for category, message in messages %}
+                            <li class="alert alert-{{ category }}">{{ message }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% endwith %}
+                  {% endblock %}
+                
+<script>
+  // Hilangkan flash setelah 5 detik
+  setTimeout(function() {
+    let flash = document.getElementById("flash-messages");
+    if (flash) {
+      flash.classList.add("flash-hide");
+      setTimeout(() => flash.remove(), 500);
+    }
+  }, 8000);
+</script>
+
+<!-- Tabel histori -->
+<div class="history-table-wrapper">
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th>Tanggal Prediksi</th>
+        <th>Periode</th>
+        <th>Rute</th>
+        <th>Kode</th>
+        <th>Kategori Golongan</th>
+        <th>Jenis Bangunan</th>
+        <th>Hasil Prediksi (M³)</th>
+        <th>Data Aktual (M³)</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="historyTableBody">
+      {% for row in history_data %}
+      <tr>
+        <td>{{ row.tanggal }}</td>
+        <td>{{ row.periode }}</td>
+        <td>{{ row.rute or '-' }}</td>
+        <td>{{ row.kode or '-' }}</td>
+        <td>{{ row.kategori_golongan or '-' }}</td>
+        <td>{{ row.jenis_bangunan or '-' }}</td>
+        <td>{{ "%.2f"|format(row.prediksi) if row.prediksi is not none else '-' }}</td>
+        <td>{{ row.aktual if row.aktual is not none else '-' }}</td>
+        <td>
+          <a href="{{ url_for('forecast_history.forecast_detail', forecast_id=row.id) }}">
+            Lihat Detail
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+
+<!-- GRAFIK HISTORY -->
+<div class="history-chart-wrapper">
+  <canvas id="historyChart" style="width:100%; height:400px;"></canvas>
+  <!-- Canvas tersembunyi untuk PDF -->
+  <canvas id="historyChartHidden" style="display:none;"></canvas>
+</div>
+
+<!-- Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+
+<script>
+const historyData = JSON.parse('{{ history_data_json | safe }}');
+
+// ----- Render Chart utama -----
+const ctx = document.getElementById('historyChart').getContext('2d');
+const historyChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: historyData.map(d => d.tanggal + ' | ' + (d.rute || '-')),
+    datasets: [
+      { label: 'Prediksi (M³)', data: historyData.map(d => d.prediksi ?? 0), borderColor:'#FF5733', backgroundColor:'rgba(255,87,51,0.1)', fill:true, tension:0.4 },
+      { label: 'Aktual (M³)', data: historyData.map(d => d.aktual ?? 0), borderColor:'#337BFF', backgroundColor:'rgba(51,123,255,0.1)', fill:true, tension:0.4 }
+    ]
+  },
+  options: {
+    responsive:true,
+    plugins:{ legend:{display:true} },
+    interaction:{ mode:'nearest', axis:'x', intersect:false },
+    scales:{ y:{ beginAtZero:true }, x:{ ticks:{ maxRotation:90, minRotation:45 } } }
+  }
+});
+
+// ----- Canvas tersembunyi untuk PDF -----
+const ctxHidden = document.getElementById('historyChartHidden').getContext('2d');
+const historyChartHidden = new Chart(ctxHidden, {
+  type:'line',
+  data:{
+    labels: historyData.map(d => d.tanggal + ' | ' + (d.rute || '-')),
+    datasets:[
+      { label:'Prediksi (M³)', data: historyData.map(d=>d.prediksi ?? 0), borderColor:'#FF5733', backgroundColor:'rgba(255,87,51,0.1)', fill:true, tension:0.4 },
+      { label:'Aktual (M³)', data: historyData.map(d=>d.aktual ?? 0), borderColor:'#337BFF', backgroundColor:'rgba(51,123,255,0.1)', fill:true, tension:0.4 }
+    ]
+  }
+});
+
+// ----- Render Tabel -----
+const tableBody = document.getElementById('historyTableBody');
+const filterRute = document.getElementById('filterRute');
+const filterKode = document.getElementById('filterKode');
+const filterKategoriGolongan = document.getElementById('filterKategoriGolongan');
+const filterJenisBangunan = document.getElementById('filterJenisBangunan');
+const filterDate = document.getElementById('filterDate');
+let filteredData = [...historyData];
+
+function renderTable(data){
+  tableBody.innerHTML = "";
+  data.forEach(row=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${row.tanggal}</td>
+      <td>${row.periode}</td>
+      <td>${row.rute}</td>
+      <td>${row.kode}</td>
+      <td>${row.kategori_golongan}</td>
+      <td>${row.jenis_bangunan}</td>
+      <td>${row.prediksi}</td>
+      <td>${row.aktual}</td>
+      <td><a href="/history/forecast-detail/${row.id}" class="btn small">Detail</a></td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+renderTable(historyData);
+
+// ----- Update Chart -----
+function updateChart(data){
+  historyChart.data.labels = data.map(d=>d.tanggal +' | '+(d.rute||'-'));
+  historyChart.data.datasets[0].data = data.map(d=>d.prediksi ?? 0);
+  historyChart.data.datasets[1].data = data.map(d=>d.aktual ?? 0);
+  historyChart.update();
+
+  historyChartHidden.data.labels = historyChart.data.labels;
+  historyChartHidden.data.datasets[0].data = historyChart.data.datasets[0].data;
+  historyChartHidden.data.datasets[1].data = historyChart.data.datasets[1].data;
+  historyChartHidden.update();
+}
+
+// ----- Filter Button -----
+document.getElementById('applyFilter').addEventListener('click', ()=>{
+  const ruteVal = filterRute.value;
+  const kodeVal = filterKode.value;
+  const kategoriVal = filterKategoriGolongan.value;
+  const jenisVal = filterJenisBangunan.value;
+  const dateVal = filterDate.value;
+
+  filteredData = historyData.filter(d=>{
+    let matchRute = ruteVal ? d.rute===ruteVal : true;
+    let matchKode = kodeVal ? d.kode===kodeVal : true;
+    let matchKategori = kategoriVal ? d.kategori_golongan===kategoriVal : true;
+    let matchJenis = jenisVal ? d.jenis_bangunan===jenisVal : true;
+    let matchDate = dateVal ? d.tanggal.startsWith(dateVal) : true;
+    return matchRute && matchKode && matchKategori && matchJenis && matchDate;
+  });
+  renderTable(filteredData);
+  updateChart(filteredData);
+});
+
+// ----- Reset Button -----
+document.getElementById('resetFilter').addEventListener('click', () => {
+  filterRute.value = '';
+  filterKode.value = '';
+  filterKategoriGolongan.value = '';
+  filterJenisBangunan.value = '';
+  filterDate.value = '';
+
+  filteredData = [...historyData];
+  renderTable(filteredData);
+  updateChart(filteredData);
+});
+
+
+// ----- Download CSV -----
+function downloadCSV() {
+  // Array untuk CSV
+  const csvRows = [];
+
+  // === Header seperti di PDF ===
+  csvRows.push(["PEMERINTAH KABUPATEN ACEH TAMIANG"]);
+  csvRows.push(["PERUSAHAAN UMUM DAERAH AIR MINUM TIRTA TAMIANG"]);
+  csvRows.push(["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"]);
+  csvRows.push([]);
+  csvRows.push(["History Forecast Konsumsi Air"]);
+  csvRows.push([]);
+
+  // === Data Tabel ===
+  csvRows.push([
+    "Tanggal",
+    "Periode",
+    "Rute",
+    "Kode",
+    "Kategori Golongan",
+    "Jenis Bangunan",
+    "Prediksi (M³)",
+    "Aktual (M³)"
+  ]);
+
+  filteredData.forEach(d => {
+    csvRows.push([
+      d.tanggal,
+      d.periode,
+      d.rute,
+      d.kode,
+      d.kategori_golongan,
+      d.jenis_bangunan,
+      d.prediksi,
+      d.aktual
+    ]);
+  });
+
+  // Gunakan titik koma (;) supaya aman di Excel
+  const csvContent = csvRows.map(row =>
+    row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(";")
+  ).join("\n");
+
+  // Buat link download
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "history_forecast.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+
+
+// ----- Download Excel -----
+async function downloadExcel() {
+  if (!filteredData || filteredData.length === 0) return;
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("HistoryForecast");
+
+  // === Kop Surat ===
+  sheet.addRow(["PEMERINTAH KABUPATEN ACEH TAMIANG"]);
+  sheet.addRow(["PERUSAHAAN UMUM DAERAH AIR MINUM TIRTA TAMIANG"]);
+  sheet.addRow(["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"]);
+  sheet.addRow([]);
+  sheet.addRow(["History Forecast Konsumsi Air"]);
+  sheet.addRow([]);
+
+  // Style kop
+  sheet.getRow(1).font = { bold: true, color: { argb: "00008B" } };
+  sheet.getRow(2).font = { bold: true, color: { argb: "006400" } };
+  sheet.getRow(3).font = { color: { argb: "808080" } };
+  sheet.getRow(5).font = { bold: true };
+
+  // Header tabel
+  const headerRow = sheet.addRow([
+    "Tanggal",
+    "Periode",
+    "Rute",
+    "Kode",
+    "Kategori Golongan",
+    "Jenis Bangunan",
+    "Prediksi (M³)",
+    "Aktual (M³)"
+  ]);
+  headerRow.font = { bold: true };
+  headerRow.alignment = { horizontal: "center" };
+  headerRow.eachCell(cell => {
+    cell.border = { top:{style:"thin"}, left:{style:"thin"}, bottom:{style:"thin"}, right:{style:"thin"} };
+    cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"D9E1F2"} };
+  });
+
+  // Isi tabel
+  filteredData.forEach((d, index) => {
+    const row = sheet.addRow([
+      d.tanggal,
+      d.periode,
+      d.rute,
+      d.kode,
+      d.kategori_golongan,
+      d.jenis_bangunan,
+      d.prediksi,
+      d.aktual
+    ]);
+    row.eachCell(cell => {
+      cell.border = { top:{style:"thin"}, left:{style:"thin"}, bottom:{style:"thin"}, right:{style:"thin"} };
+      if (index % 2 === 0) {
+        cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"F2F2F2"} };
+      }
+    });
+  });
+
+  // Auto width
+  sheet.columns.forEach(column => {
+    let maxLength = 0;
+    column.eachCell({ includeEmpty: true }, cell => {
+      const len = cell.value ? cell.value.toString().length : 10;
+      if (len > maxLength) maxLength = len;
+    });
+    column.width = maxLength + 5;
+  });
+
+  // Download
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  });
+  saveAs(blob, "history_forecast.xlsx"); // butuh FileSaver.js
+}
+
+
+// ----- Download PDF A4 Landscape + Margin 3cm + Grafik + Header & Logo -----
+function downloadPDF(){
+  if(!filteredData || filteredData.length===0) return;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'cm', format:'a4' });
+  const margin = 1;
+  let startY = margin;
+
+  // === Tambah Logo ===
+  const img = new Image();
+  img.src = '/static/img/logo_perumda.png';
+  img.onload = function() {
+    doc.addImage(img, 'PNG', margin, margin, 2.5, 2.5); 
+
+    // === Kop Surat ===
+    const headerX = margin + 3.2; // posisi X header = logo (2.5) + jarak (0.7)
+    doc.setFontSize(17);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 139); // biru tua
+    doc.setCharSpace(0.1);
+    doc.text("PEMERINTAH KABUPATEN ACEH TAMIANG", headerX, margin + 1, { align: "left" });
+    doc.setCharSpace(0);
+
+    doc.setFontSize(15);
+    doc.setTextColor(0, 100, 0); // hijau
+    doc.setCharSpace(0.1);
+    doc.text("PERUMDA AIR MINUM TIRTA TAMIANG", headerX, margin + 1.8, { align: "left" });
+    doc.setCharSpace(0);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80); // abu-abu
+    doc.text("Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992, Fax. (0641) 332992, Provinsi Aceh",
+              headerX, margin + 2.6, { align: "left" });
+
+    // Garis bawah kop surat
+    doc.setLineWidth(0.05);
+    doc.line(margin, margin + 3.2, doc.internal.pageSize.getWidth() - margin, margin + 3.2);
+
+    // === Judul Laporan ===
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("History Forecast Konsumsi Air", doc.internal.pageSize.getWidth()/2, margin + 4.5, { align: "center" });
+
+    // === Geser posisi tabel biar ga tabrakan ===
+    startY = margin + 5.5;
+
+    // === Tabel ===
+    doc.autoTable({
+      startY,
+      head:[[ "Tanggal","Periode","Rute", "Kode", "Kategori Golongan","Jenis Bangunan","Prediksi (M³)","Aktual (M³)"]],
+      body: filteredData.map(d=>[d.tanggal,d.periode,d.rute,d.kode,d.kategori_golongan,d.jenis_bangunan,d.prediksi,d.aktual]),
+      margin:{ left:margin, right:margin },
+      styles:{ fontSize:10 },
+      theme:'grid'
+    });
+
+    // === Grafik ===
+    const chartImg = historyChartHidden.toBase64Image();
+    let chartY = doc.previousAutoTable.finalY + 1;
+
+    if (chartY + 10 > doc.internal.pageSize.getHeight() - margin) {
+      doc.addPage();
+      chartY = margin + 1;
+    }
+
+    const chartWidth = doc.internal.pageSize.getWidth() - 2*margin;
+    const chartHeight = 10;
+    doc.addImage(chartImg, 'PNG', margin, chartY, chartWidth, chartHeight);
+
+    doc.save("history_forecast.pdf");
+  };
+}
+
+
+// ----- Tambahkan tombol download -----
+const csvBtn = document.createElement("button"); csvBtn.textContent="Download CSV"; csvBtn.className="btn"; csvBtn.onclick=downloadCSV;
+const excelBtn = document.createElement("button"); excelBtn.textContent="Download Excel"; excelBtn.className="btn"; excelBtn.onclick=downloadExcel;
+const pdfBtn = document.createElement("button"); pdfBtn.textContent="Download PDF + Grafik"; pdfBtn.className="btn"; pdfBtn.onclick=downloadPDF;
+document.querySelector('.history-filter').appendChild(csvBtn);
+document.querySelector('.history-filter').appendChild(excelBtn);
+document.querySelector('.history-filter').appendChild(pdfBtn);
+
+</script>
+{% endblock %}

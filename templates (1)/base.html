@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}WEBSITE FORECASTING AIR BERSIH{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_main_menu.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+     <div class="logo">
+        <img src="{{ url_for('static', filename='img/logo_perumda.svg') }}" alt="Logo PERUMDA" class="logo-img">
+            <span>PERUMDA AIR MINUM TIRTA TAMIANG</span>
+        </div>
+
+      <div class="user-info">
+          {% if session.get('user_profile_picture') %}
+            <img src="{{ url_for('static', filename=session['user_profile_picture']) }}" alt="Foto Profil" class="profile-img">
+          {% else %}
+            <img src="{{ url_for('static', filename='uploads/profile_pictures/default_profile.png') }}" alt="Default" class="profile-img">
+          {% endif %}
+
+          {% if session.get('user_name') %}
+            <p class="user-name">{{ session['user_name'] }}</p>
+          {% endif %}
+      </div>
+
+      <ul class="nav-links">
+        <li>
+            <a href="{{ url_for('dashboard') }}" class="{% if active_page == 'dashboard' %}active{% endif %}">
+              <img src="{{ url_for('static', filename='img/icon_home_page.svg') }}" alt="Home Page Icon"  class="icon-white" />
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('data_konsumsi_aktual') }}" class="{% if active_page == 'data_konsumsi_aktual' %}active{% endif %}">
+              <img src="{{ url_for('static', filename='img/icon_data_actual.svg') }}" alt="Data Konsumsi Actual Icon" class="icon-white" />
+                Data Konsumsi Aktual
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('forecasting_konsumsi') }}" class="{% if active_page == 'forecasting_konsumsi' %}active{% endif %}">
+              <img src="{{ url_for('static', filename='img/icon_forecasting.svg') }}" alt="Forecasting Konsumsi Icon" class="icon-white" />
+                Forecasting Konsumsi
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('forecast_history.forecasting_page') }}" class="{% if active_page == 'history_forecast' %}active{% endif %}">
+              <img src="{{ url_for('static', filename='img/icon_history.svg') }}" alt="History Forecast" class="icon-white" />
+                History Forecast
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('unggah_data_konsumsi') }}" class="{% if active_page == 'unggah_data_konsumsi' %}active{% endif %}">
+              <img src="{{ url_for('static', filename='img/icon_unggah.svg') }}" alt="Unggah Data Konsumsi Icon" class="icon-white" />
+                Unggah Data Konsumsi
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('profil_saya') }}" class="{% if active_page == 'profil_saya' %}active{% endif %}">
+              <img src="{{ url_for('static', filename='img/icon_profil.svg') }}" alt="Profil Saya Icon" class="icon-white" />
+                Profil Saya
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('logout') }}" class="{% if active_page == 'logout' %}active{% endif %}">
+              <img src="{{ url_for('static', filename='img/icon_logout.svg') }}" alt="Logout Icon" class="icon-white" />
+                Logout
+            </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+        {% block header %}
+          <header class="main-header">
+            <h1 class="gradient-text">
+                Selamat Datang {{ session['user_name'] }}
+                <span class="emoji">👋</span>
+              </h1>
+          </header>
+      {% endblock %}
+
+      <!-- Page Content -->
+      <main class="content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+   {% block scripts %}{% endblock %}
+</body>
+</html>

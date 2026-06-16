@@ -1,0 +1,1207 @@
+/* LOGIN PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.login-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.login-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.login-page .left-top {
+  margin-bottom: 2px;
+}
+
+.login-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.login-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.login-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.login-page .left-image img {
+  width: 90%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.login-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* agar isi tidak selalu center vertikal */
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.login-page .right-section h1 {
+  font-size: 60px;
+  font-weight: 700;
+  margin-top: 25px;  /* tambahin jarak atas */
+  margin-bottom: 14px;
+  color: #000000;
+}
+
+.login-page .login-instruction {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 2vw, 18px);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.94);
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+/* Form container */
+.login-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px; /* batas maksimum */
+}
+
+/* Form field */
+.login-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF), /* isi field = ungu muda */
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%); /* garis luar */
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ICON di kiri input */
+.login-page .form-field img {
+  background-color: #DEDFE2; /* latar belakang icon */
+  padding: 9px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 40px;
+  height: 40px;
+}
+
+/* Input */
+.login-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.login-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.36);
+  transform: translateY(-1px);
+}
+
+.login-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Tombol Login */
+.login-page .login-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 9px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.login-page .login-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+/* Tambahan styling untuk teks "Forgot password?" */
+.login-page .forgot-password-text {
+  text-align: right;
+  margin-top: -9px;
+  margin-bottom: 20px;
+}
+
+.login-page .forgot-password-text a {
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-page .forgot-password-text a:hover {
+  color: #4D6CE5; /* warna saat di-hover */
+  text-decoration: underline;
+}
+
+/* Styling untuk teks "Don't have an account?" dan link Sign Up */
+.login-page .signup-link-text {
+  font-size: 17px;
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.login-page .signup-link-text a {
+  color: #0d3e91;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-page .signup-link-text a:hover {
+  text-decoration: underline;
+}
+
+.login-page .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+
+/* FORGOT PASSWORD PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.forgot-password-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.forgot-password-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.forgot-password-page .left-top {
+  margin-bottom: 2px;
+}
+
+.forgot-password-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.forgot-password-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.forgot-password-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.forgot-password-page .left-image img {
+  width: 100%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.forgot-password-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* agar isi tidak selalu center vertikal */
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.forgot-password-page .right-section h1 {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 100px;  /* tambahin jarak atas */
+  margin-bottom: 20px;
+  text-align: center;
+  color: #000000;
+}
+
+.forgot-password-page .login-instruction {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 2vw, 18px);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.94);
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Form container */
+.forgot-password-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px; /* batas maksimum */
+}
+
+/* Form field */
+.forgot-password-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF), /* isi field = ungu muda */
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%); /* garis luar */
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ICON di kiri input */
+.forgot-password-page .form-field img {
+  background-color: #DEDFE2; /* latar belakang icon */
+  padding: 9px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 44px;
+  height: 44px;
+}
+
+/* Input */
+.forgot-password-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.forgot-password-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.36);
+  transform: translateY(-1px);
+}
+
+.forgot-password-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Tombol Submit */
+.forgot-password-page .submit-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 30px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.forgot-password-page .submit-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.forgot-password-page .info-text {
+  font-size: 17px;
+  text-align: center;
+  line-height: 0.2;
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.forgot-password-page .flash-messages {
+  list-style: none;
+  padding: 10px;
+  margin: 0 auto 20px;
+  max-width: 500px;
+  text-align: center;
+  color: #D8000C;
+  background-color: #FFBABA;
+  border: 1px solid #D8000C;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* RESET NEW PASSWORD PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.reset-new-password-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.reset-new-password-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.reset-new-password-page .left-top {
+  margin-bottom: 2px;
+}
+
+.reset-new-password-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.reset-new-password-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.reset-new-password-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.reset-new-password-page .left-image img {
+  width: 90%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.reset-new-password-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* agar isi tidak selalu center vertikal */
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.reset-new-password-page .reset-password-instruction {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 120px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #000000;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Form container */
+.reset-new-password-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px; /* batas maksimum */
+}
+
+/* Form field */
+.reset-new-password-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF), /* isi field = ungu muda */
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%); /* garis luar */
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ICON di kiri input */
+.reset-new-password-page .form-field img {
+  background-color: #DEDFE2; /* latar belakang icon */
+  padding: 9px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 44px;
+  height: 44px;
+}
+
+/* Input */
+.reset-new-password-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.reset-new-password-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.36);
+  transform: translateY(-1px);
+}
+
+.reset-new-password-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Tombol Submit */
+.reset-new-password-page .submit-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 9px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.reset-new-password-page .submit-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.reset-new-password-page .flash-messages {
+  list-style: none;
+  padding: 10px;
+  margin: 0 auto 20px;
+  max-width: 500px;
+  text-align: center;
+  color: #D8000C;
+  background-color: #FFBABA;
+  border: 1px solid #D8000C;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+
+/* RESET NEW PHONE NUMBER PAGE LAYOUT */
+/* ini untuk bagian left section untuk warna bg, title besar dan ilustrasi*/
+.reset-phone-number-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.reset-phone-number-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px; /* radius lainnya tidak diberi, jadi tetap lancip */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0; /* supaya tidak terlalu rapat ke bawah */
+}
+
+/* TITLE */
+.reset-phone-number-page .left-top {
+  margin-bottom: 2px;
+}
+
+.reset-phone-number-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px); /* Lebih fleksibel saat resize */
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.reset-phone-number-page .title .bold {
+  font-weight: 700;
+}
+
+/* IMAGE CONTAINER */
+.reset-phone-number-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 30px; /* tambahkan ini untuk jarak ke bawah */
+  overflow: hidden;
+}
+
+.reset-phone-number-page .left-image img {
+  width: 75%;   /* perbesar lebar gambar */
+  height: auto;  /* otomatis menyesuaikan agar proporsi tetap */
+  object-fit: contain;
+}
+
+/* ini untuk bagian right section untuk warna bg, title besar, form, submit, dan login*/
+/* RIGHT SECTION */
+.reset-phone-number-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* agar isi tidak selalu center vertikal */
+  gap: 30px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Judul */
+.reset-phone-number-page .reset-phone-number-instruction {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 80px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #000000;
+  font-family: 'Poppins', sans-serif;
+}
+
+.reset-phone-number-page .info-text {
+  font-size: 17px;
+  text-align: center;
+  line-height: 0.2;
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+  margin-top: -10px;
+}
+
+/* Tambahan styling untuk label */
+.reset-phone-number-page .form-label {
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 10px;
+  text-align: left;
+  margin-bottom: -5px;
+  color: rgba(0, 0, 0, 0.94);
+  display: block; /* penting biar tampil di atas input */
+}
+
+/* Form container */
+.reset-phone-number-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px; /* batas maksimum */
+}
+
+/* Form field */
+.reset-phone-number-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px;
+  margin-top: 15px;
+  margin-bottom: 22px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF), /* isi field = ungu muda */
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%); /* garis luar */
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* ICON di kiri input */
+.reset-phone-number-page .form-field img {
+  background-color: #DEDFE2; /* latar belakang icon */
+  padding: 9px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 44px;
+  height: 44px;
+}
+
+/* Input */
+.reset-phone-number-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.reset-phone-number-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.36);
+  transform: translateY(-1px);
+}
+
+.reset-phone-number-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Tombol Submit */
+.reset-phone-number-page .submit-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 9px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.reset-phone-number-page .submit-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.reset-phone-number-page .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+
+/* VERIFY CODE PAGE LAYOUT */
+.verify-code-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.verify-code-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0;
+}
+
+.verify-code-page .left-top {
+  margin-bottom: 2px;
+}
+
+.verify-code-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px);
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.verify-code-page .title .bold {
+  font-weight: 700;
+}
+
+.verify-code-page .left-image {
+  max-height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.verify-code-page .left-image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* RIGHT SECTION */
+.verify-code-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+.verify-code-page .verify-code-instruction {
+  font-size: 35px;
+  font-weight: 700;
+  margin-top: 120px;
+  margin-bottom: 40px;
+  text-align: center;
+  color: #000000;
+}
+
+.verify-code-page .info-text {
+  font-size: 17px;
+  text-align: center;
+  line-height: 0.6;
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+  margin-top: -4px;
+  margin-bottom: 0;
+}
+
+/* Form container */
+.verify-code-page .form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin-top: 5px;
+}
+
+/* Form field */
+.verify-code-page .form-field {
+  display: flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#F7F5FF, #F7F5FF),
+    linear-gradient(90deg, #4D6CE5 0%, #1FA96D 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.verify-code-page .form-field img {
+  background-color: #DEDFE2;
+  padding: 9px;
+  border-radius: 8px;
+  margin-right: 16px;
+  width: 44px;
+  height: 44px;
+}
+
+.verify-code-page .form-field input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 17px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.36);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.verify-code-page .form-field input:focus {
+  color: rgba(0, 0, 0, 0.8);
+  transform: translateY(-1px);
+}
+
+.verify-code-page .form-field input::placeholder {
+  color: rgba(0, 0, 0, 0.36);
+  font-weight: 600;
+}
+
+/* Submit Button */
+.verify-code-page .submit-button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 9px;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.verify-code-page .submit-button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.verify-code-page .resend-text {
+  color: rgba(0, 0, 0, 0.36);
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: -8px;
+  text-decoration: none;
+}
+
+.verify-code-page .resend-text :hover {
+  color: #4D6CE5; /* warna saat di-hover */
+  text-decoration: underline;
+}
+
+.verify-code-page .flash-messages {
+  background-color: #ffe6e6;
+  color: #b30000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: -5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.verify-code-page .resend-text {
+  font-size: 19px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+  margin-top: 2px;
+  margin-bottom: 5x;
+}
+
+.verify-code-page .resend-text a {
+  color: #007BFF;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.verify-code-page .resend-text a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+
+/* VERIFY SUCCESS PAGE LAYOUT */
+.verify-success-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SECTION */
+.verify-success-page .left-section {
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(180deg, #082551 0%, #1253B7 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5vw;
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 0;
+}
+
+.verify-success-page .left-top {
+  margin-bottom: 2px;
+}
+
+.verify-success-page .title {
+  font-weight: 500;
+  font-size: clamp(20px, 2.8vw, 30px);
+  line-height: 1.4;
+  letter-spacing: 8px;
+  color: rgba(255, 255, 255, 0.99);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.verify-success-page .title .bold {
+  font-weight: 700;
+}
+
+.verify-success-page .left-image {
+  max-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.verify-success-page .left-image img {
+  width: 80%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* RIGHT SECTION */
+.verify-success-page .right-section {
+  width: 50%;
+  padding: 5vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  background-color: #fff;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+.verify-success-page .title-success {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  text-align: center;
+  color: #000000;
+}
+
+.verify-success-page .success-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 19px; /* jarak antara gambar & teks */
+  margin-top: 30px;
+  margin-bottom: 25px;
+}
+
+.verify-success-page .container img {
+  width: 200px;
+  height: auto;
+  align-items: center;
+  display: flex;
+  margin: 0 auto 20px;
+}
+
+.verify-success-page img.mirror {
+  transform: scaleX(-1);
+}
+
+.verify-success-page p {
+   font-size: 17px;
+   text-align: center;
+   line-height: 1.5;
+   color: rgba(0, 0, 0, 0.36);
+   font-weight: 600;
+   margin-top: 10px;
+   margin-bottom: 10px;
+}
+
+.verify-success-page .greeting-text {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  line-height: 1.5;
+
+  /* Gradient text */
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  -webkit-background-clip: text;
+  background-clip: text; /* Ini untuk kompatibilitas standar */
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* fallback tambahan */
+}
+
+.verify-success-page .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* untuk semua isi termasuk tombol */
+  justify-content: center;
+  text-align: center;
+}
+
+.verify-success-page .button {
+  background: linear-gradient(to right, #1CB5E0, #000851);
+  color: white;
+  width: 276px;
+  height: 56px;
+  line-height: 56px; /* samakan dengan height */
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+  text-align: center;
+  align-self: center;
+}
+
+.verify-success-page .button:hover {
+  opacity: 0.85;
+  background: #0d3e91;
+}
+
+.verify-success-page .flash-messages {
+  list-style-type: none;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #e0f7fa;
+  color: #00796b;
+  border: 1px solid #4db6ac;
+  border-radius: 8px;
+  font-weight: 500;
+}

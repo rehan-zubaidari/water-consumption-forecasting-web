@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verifikasi Berhasil</title>
+
+  <!-- Import Font & CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+</head>
+<body>
+<div class="verify-success-page">
+  <div class="left-section">
+    <div class="left-top">
+      <h1 class="title">
+        <span>Welcome to</span><br />
+        <span class="bold">Access Clean Water Forecasts</span><br />
+        <span>at</span> <span class="bold">PERUMDA</span> <span>Air Minum</span><br />
+        <span class="bold">TIRTA TAMIANG</span><br />
+        <span>in</span> <span class="bold">KARANG BARU</span><br />
+      </h1>
+    </div>
+    <div class="left-image">
+      <img src="{{ url_for('static', filename='img/tampilan_verify_success.svg') }}" alt="Verification Illustration" />
+    </div>
+  </div>
+
+  <div class="right-section">
+      <div class="container">
+          <!-- Flash message di sini -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <div class="success-header"></div>
+    <img src="{{ url_for('static', filename='img/icon_verify_success.png') }}" alt="Success Icon" class="mirror" />
+  <h1 class="title-success">Verifikasi Berhasil!</h1>
+
+    <p class="greeting-text">
+       Hai {{ full_name }}, akun kamu telah berhasil diverifikasi!
+    </p>
+
+    <p>Akun kamu telah berhasil diverifikasi<br>Silakan login untuk melanjutkan</p>
+    <a href="{{ url_for('verify_clear') }}" class="button">Login Sekarang</a>
+    </div>
+  </div>
+</div>
+</div> <!-- tutup .verify-success-page -->
+</body>
+</html>

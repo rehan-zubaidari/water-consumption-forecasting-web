@@ -1,0 +1,571 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Hasil Forecasting Konsumsi Pelanggan<span class="emoji">📈</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <p class="description">
+  Forecasting Konsumsi Air Bersih dilakukan menggunakan metode 
+  <strong>Autoregressive Integrated Moving Average (ARIMA)</strong>
+  berdasarkan data historis Januari 2022 – Desember 2024
+  Sistem memungkinkan peramalan berdasarkan satu atau kombinasi beberapa 
+  parameter seperti <strong>tahun, bulan, rute, kode, kategori golongan,</strong> 
+  dan <strong>jenis bangunan</strong>
+</p>
+  
+<div class="filter-forecast-button-container">
+    <button id="toggleFilterBtn" class="btn-filter-forecast">Tampilkan Filter</button>
+</div>
+
+<!-- Container filter yang akan disembunyikan -->
+<!--<div id="filterForecastContainer" class="hidden-forecast">-->
+
+      <form method="GET" action="{{ url_for('forecasting_konsumsi') }}" class="filter-forecast-form">
+
+        <div class="filter-forecast-group">
+          <label for="tahun">Tahun:</label>
+          <select name="tahun" id="tahun">
+            <option value="">Pilih</option>
+            {% for t in daftar_tahun %}
+              <option value="{{ t }}"
+                {% if request.args.get('tahun')|int == t %}selected{% endif %}>
+                {{ t }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-forecast-group">
+          <label for="bulan">Bulan:</label>
+          <select name="bulan" id="bulan">
+            <option value="">Pilih</option>
+            {% for b in daftar_bulan %}
+              <option value="{{ b }}"
+                {% if request.args.get('bulan') == b %}selected{% endif %}>
+                {{ b }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-forecast-group">
+          <label for="rute">Rute:</label>
+          <select name="rute" id="rute">
+            <option value="">Pilih</option>
+            {% for r in daftar_rute %}
+              <option value="{{ r }}"
+                {% if request.args.get('rute') == r %}selected{% endif %}>
+                {{ r }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-forecast-group">
+          <label for="jenis_bangunan">Jenis Bangunan:</label>
+          <select name="jenis_bangunan" id="jenis_bangunan">
+            <option value="">Pilih</option>
+            {% for j in daftar_jenis_bangunan %}
+              <option value="{{ j }}"
+                {% if request.args.get('jenis_bangunan') == j %}selected{% endif %}>
+                {{ j }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-forecast-group">
+          <label for="kode">Kode:</label>
+          <select name="kode" id="kode">
+            <option value="">Pilih</option>
+            {% for k in daftar_kode %}
+              <option value="{{ k }}"
+                {% if request.args.get('kode') == k %}selected{% endif %}>
+                {{ k }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-forecast-group">
+          <label for="kategori_golongan">Kategori Golongan:</label>
+          <select name="kategori_golongan" id="kategori_golongan">
+            <option value="">Pilih</option>
+            {% for g in daftar_kategori_golongan %}
+              <option value="{{ g }}"
+                {% if request.args.get('kategori_golongan') == g %}selected{% endif %}>
+                {{ g }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" name="mode" value="aktual">
+            Tampilkan Data Aktual
+          </button>
+
+          {% if mode == "aktual" and data_aktual is not none and not data_aktual.empty %}
+            <button type="submit" name="mode" value="forecast">
+              Forecast
+            </button>
+          {% endif %}
+
+            <a href="{{ url_for('forecasting_konsumsi') }}" class="reset-button-forecast">
+              Reset
+            </a>
+       </form>
+
+                  {% block flash %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        <ul class="flash-messages-forecast">
+                          {% for category, message in messages %}
+                            <li class="alert alert-{{ category }}">{{ message }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% endwith %}
+                  {% endblock %}
+
+                {% if data_aktual is not none and not data_aktual.empty %}
+                    <h3 class="table-title-aktual">Data Konsumsi Aktual</h3>
+                      <table class="tabel-aktual">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>Bulan</th>
+                            <th>Konsumsi Aktual (M³)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for row in data_aktual.itertuples() %}
+                          <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ row.TANGGAL.strftime('%B %Y') }}</td>
+                            <td>{{ "%.2f"|format(row.KONSUMSI) }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                  {% endif %}
+
+                {% if mode == 'forecast' %}
+                  <div class="forecast-header">
+                    <h3 class="table-title-forecasting">Data Konsumsi Hasil Forecasting</h3>
+
+                      <div class="download-wrapper">
+                        <button class="btn main-btn-forecast">Download Forecast Here!</button>
+                        <div class="dropdown-content">
+                          <button onclick="downloadCSV()">Download as CSV</button>
+                          <button onclick="exportStyledExcel()">Download as Excel</button>
+                          <button onclick="downloadPDF()">Download as PDF</button>
+                        </div>
+                      </div>
+
+                  <!-- JS -->
+                        <script>
+                        const mainBtn = document.querySelector(".download-wrapper .main-btn-forecast");
+                        const wrapper = document.querySelector(".download-wrapper");
+
+                        mainBtn.addEventListener("click", () => {
+                          wrapper.classList.toggle("show"); // toggle tampil/tidak
+                        });
+
+                        // klik di luar untuk tutup dropdown
+                        window.addEventListener("click", (e) => {
+                          if (!wrapper.contains(e.target)) {
+                            wrapper.classList.remove("show");
+                          }
+                        });
+                        </script>
+
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+                        <input type="hidden" id="forecastDownloadData" value='{{ forecast_download_json|safe }}' />
+
+                        <script>
+                          function getForecastData() {
+                          const hiddenInput = document.getElementById("forecastDownloadData");
+                          return JSON.parse(hiddenInput.value || "[]");
+                          }
+
+                          // Download CSV
+                          function downloadCSV() {
+                            const forecastData = getForecastData(); // data [{label, value}, ...]
+
+                            // Array untuk CSV
+                            const csvRows = [];
+
+                            // === Header seperti PDF ===
+                            csvRows.push(["PEMERINTAH KABUPATEN ACEH TAMIANG"]);
+                            csvRows.push(["PERUSAHAAN UMUM DAERAH AIR MINUM TIRTA TAMIANG"]);
+                            csvRows.push(["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"]);
+                            csvRows.push([]);
+                            csvRows.push(["Hasil Forecasting Konsumsi Air"]);
+                            csvRows.push([]);
+
+                            // === Data Tabel ===
+                            csvRows.push(["Bulan", "Prediksi Konsumsi (M³)"]);
+                            forecastData.forEach(row => {
+                                csvRows.push([row.label, row.value]);
+                            });
+
+                            // Gunakan titik koma sebagai separator
+                            const csvContent = csvRows.map(e => e.join(";")).join("\n");
+
+                            // Buat link download
+                            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement("a");
+                            link.setAttribute("href", url);
+                            link.setAttribute("download", "forecasting_air.csv");
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+
+                          // Download Excel
+                        async function exportStyledExcel() {
+                            const forecastData = getForecastData();
+
+                            const workbook = new ExcelJS.Workbook();
+                            const sheet = workbook.addWorksheet("Forecasting");
+
+                            // === Header ===
+                            sheet.addRow(["PEMERINTAH KABUPATEN ACEH TAMIANG"]);
+                            sheet.addRow(["PERUSAHAAN UMUM DAERAH AIR MINUM TIRTA TAMIANG"]);
+                            sheet.addRow(["Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992"]);
+                            sheet.addRow([]);
+                            sheet.addRow(["Hasil Forecasting Konsumsi Air"]);
+                            sheet.addRow([]);
+
+                            // Set style untuk header
+                            sheet.getRow(1).font = { bold: true, color: { argb: "00008B" } }; // biru tua
+                            sheet.getRow(2).font = { bold: true, color: { argb: "006400" } }; // hijau
+                            sheet.getRow(3).font = { color: { argb: "808080" } }; // abu-abu
+                            sheet.getRow(5).font = { bold: true };
+
+                            // === Tabel ===
+                            sheet.addRow(["Bulan", "Prediksi Konsumsi (M³)"]);
+
+                            forecastData.forEach((row, index) => {
+                            const r = sheet.addRow([row.label, row.value]);
+
+                            r.eachCell({ includeEmpty: false }, (cell, colNumber) => {
+                                // Selang-seling warna hanya sel yang ada data
+                                if(index % 2 === 0){
+                                    cell.fill = {
+                                        type: 'pattern',
+                                        pattern: 'solid',
+                                        fgColor: { argb: 'CADBEB' } // warna selang-seling
+                                    };
+                                }
+
+                                // Border untuk sel yang ada data
+                                cell.border = {
+                                    top: { style: 'thin' },
+                                    left: { style: 'thin' },
+                                    bottom: { style: 'thin' },
+                                    right: { style: 'thin' }
+                                };
+                            });
+                        });
+
+                            // Border header
+                            sheet.getRow(7).eachCell(cell => {
+                                cell.font = { bold: true };
+                                cell.alignment = { horizontal: 'center' };
+                                cell.border = {
+                                    top: { style: 'thin' },
+                                    left: { style: 'thin' },
+                                    bottom: { style: 'thin' },
+                                    right: { style: 'thin' }
+                                };
+                            });
+
+                            // Auto width
+                            sheet.columns.forEach(column => {
+                                let maxLength = 0;
+                                column.eachCell({ includeEmpty: true }, cell => {
+                                    const len = cell.value ? cell.value.toString().length : 10;
+                                    if (len > maxLength) maxLength = len;
+                                });
+                                column.width = maxLength + 5;
+                            });
+
+                            // Simpan di browser
+                            const buffer = await workbook.xlsx.writeBuffer();
+                            const blob = new Blob([buffer], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                            saveAs(blob, "forecasting_air.xlsx"); // pake FileSaver.js
+                        }
+
+                          // Download PDF (pakai tabel biar rapi)
+                        function downloadPDF() {
+                            const forecastData = getForecastData();
+                            const { jsPDF } = window.jspdf;
+                            const doc = new jsPDF();
+
+                            // === Tambah Logo ===
+                            const img = new Image();
+                            img.src = '/static/img/logo_perumda.png';
+                            img.onload = function() {
+                                doc.addImage(img, 'PNG', 15, 12, 20, 20); 
+
+                                // === Kop Surat ===
+                                doc.setFontSize(17);
+                                doc.setFont("helvetica", "bold");
+                                doc.setTextColor(0, 0, 139); // biru tua
+                                doc.text("PEMERINTAH KABUPATEN ACEH TAMIANG", 40, 18, { align: "left" });
+
+                                doc.setFontSize(15);
+                                doc.setTextColor(0, 100, 0); // hijau
+                                doc.text("PERUSAHAAN UMUM DAERAH AIR MINUM TIRTA TAMIANG", 40, 25, { align: "left" });
+
+                                doc.setFontSize(9);
+                                doc.setFont("helvetica", "normal");
+                                doc.setTextColor(128, 128, 128); // abu-abu
+                                doc.text("Jl. Penjernihan 1, Desa Kesehatan, Karang Baru 24476, Telp. (0641) 332992, Fax. (0641) 332992, Provinsi Aceh", 40, 31, { align: "left" });
+
+                                // Garis bawah kop surat
+                                doc.setLineWidth(0.5);
+                                doc.line(15, 35, 195, 35);
+
+                                // === Judul Laporan ===
+                                doc.setFontSize(16);
+                                doc.setFont("helvetica", "bold");
+                                doc.setTextColor(0, 0, 0); // hitam
+                                doc.text("Hasil Forecasting Konsumsi Air", 15, 45, { align: "left" });
+
+                                // === Data Tabel ===
+                                const tableData = forecastData.map(row => [row.label, row.value]);
+                                doc.autoTable({
+                            head: [["Bulan", "Prediksi Konsumsi (M³)"]],
+                            body: tableData,
+                            startY: 52, // sesuai posisi judul
+                            styles: {
+                                fontSize: 12,
+                                halign: "center",
+                                lineColor: [0, 0, 0], // warna garis hitam
+                                lineWidth: 0.1
+                            },
+                            headStyles: {
+                                fillColor: [41, 128, 185], // biru header
+                                textColor: 255,
+                                halign: "center",
+                                lineColor: [0, 0, 0],
+                                lineWidth: 0.1
+                            },
+                            // buat semua garis tabel muncul
+                            drawRowLine: true,
+                            drawHeaderRow: true
+                        });
+                                doc.save("forecasting_air.pdf");
+                            };
+                        }
+                        </script>
+                      </div>
+                      
+                    <table class="tabel-forecasting">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>Bulan</th>
+                          <th>Prediksi Konsumsi (M³)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% set data_forecast_final = forecast_df_filter if forecast_df_filter else forecast_df %}
+
+                        {% if data_forecast_final %}
+                            {% for row in data_forecast_final %}
+                                <tr>
+                                    <td>{{ loop.index + (page - 1) * per_page }}</td>
+                                    <td>{{ row[1]['TANGGAL'].strftime('%B %Y') }}</td>
+                                    <td>
+                                        {{ "{:,.2f}".format(row[1]['PREDIKSI_KONSUMSI'])
+                                          .replace(",", "X").replace(".", ",").replace("X", ".") }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align:center; color:#888;">
+                                    Data forecast belum tersedia
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                  </table>
+                  {% endif %}
+
+                    {% if mode == 'forecast' %}
+                    <div class="pagination-forecasting">
+                        {% set total_pages_current = total_pages_filter if forecast_df_filter else total_pages_default %}
+                            <span>Page {{ page }} of {{ total_pages_current }}</span>
+
+                            {% if page > 1 %}
+                                <a href="{{ url_for('forecasting_konsumsi', page=1, **args) }}">&laquo; First</a>
+                                <a href="{{ url_for('forecasting_konsumsi', page=page-1, **args) }}">&lt; Prev</a>
+                            {% endif %}
+
+                            {% if page < total_pages_current %}
+                                <a href="{{ url_for('forecasting_konsumsi', page=page+1, **args) }}">Next &gt;</a>
+                                <a href="{{ url_for('forecasting_konsumsi', page=total_pages_current, **args) }}">Last &raquo;</a>
+                            {% endif %}
+                    </div>
+                    {% endif %}
+            <script src="{{ url_for('static', filename='js/filter-forecast-toggle.js') }}"></script>
+
+
+{% if mode == 'forecast' %}
+<div class="chart-download-wrapper">
+  <button class="btn main-btn-forecast" onclick="toggleChartDropdown()">Download Chart Here!</button>
+  <div class="chart-dropdown-content">
+    <button onclick="downloadChart('png')">Download as PNG</button>
+    <button onclick="downloadChart('jpeg')">Download as JPEG</button>
+    <button onclick="downloadChart('pdf')">Download as PDF</button>
+  </div>
+</div>
+
+<script>
+function toggleChartDropdown() {
+  const wrapper = document.querySelector('.chart-download-wrapper');
+  wrapper.classList.toggle('show');
+}
+
+// klik di luar dropdown untuk menutup
+window.addEventListener('click', function(e) {
+  const wrapper = document.querySelector('.chart-download-wrapper');
+  if (!wrapper.contains(e.target)) {
+    wrapper.classList.remove('show');
+  }
+});
+
+// fungsi download chart
+function downloadChart(type='png') {
+  const chart = Chart.getChart("forecastChart");
+  if (!chart) return;
+
+  if(type === 'png') {
+    const link = document.createElement("a");
+    link.href = chart.toBase64Image();
+    link.download = "forecast_chart.png";
+    link.click();
+  } else if(type === 'pdf') {
+    const doc = new jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const margin = 30; // 3 cm
+    const pdfWidth = 297;
+    const pdfHeight = 210;
+    const imgWidth = pdfWidth - 2*margin;
+    const imgHeight = pdfHeight - 2*margin;
+    const imgData = chart.toBase64Image();
+    doc.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+    doc.save('forecast_chart.pdf');
+  }
+  else if(type === 'jpeg') {
+    const link = document.createElement("a");
+    link.href = chart.toBase64Image("image/jpeg", 1.0);
+    link.download = "forecast_chart.jpeg";
+    link.click();
+}
+}
+</script>
+{% endif %}
+
+{% if mode == 'forecast' and forecast_data_json %}
+<canvas id="forecastChart" data-forecast='{{ forecast_data_json | safe }}' style="width:100%; height:500px;"></canvas>
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const canvas = document.getElementById('forecastChart');
+if (!canvas) {
+    console.warn("Canvas chart tidak ada");
+} else {
+    const ctx = canvas.getContext('2d');
+    const forecastData = JSON.parse(canvas.dataset.forecast || "{}");
+    console.log("DEBUG DATA:", forecastData);
+
+    if (
+        !forecastData.tanggal_aktual ||
+        !forecastData.konsumsi_aktual ||
+        !forecastData.tanggal_forecast ||
+        !forecastData.konsumsi_forecast
+    ) {
+        console.warn("Struktur data belum lengkap");
+    } else {
+
+        let labels = [];
+        let dataAktual = [];
+        let dataForecast = [];
+
+        // DATA AKTUAL
+        forecastData.tanggal_aktual.forEach((tgl, i) => {
+            const d = new Date(tgl);
+            labels.push(d.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }));
+            dataAktual.push(forecastData.konsumsi_aktual[i]);
+            dataForecast.push(null);
+        });
+
+        // DATA FORECAST
+        forecastData.tanggal_forecast.forEach((tgl, i) => {
+            const d = new Date(tgl);
+            labels.push(d.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }));
+            dataAktual.push(null);
+            dataForecast.push(forecastData.konsumsi_forecast[i]);
+        });
+
+          new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: labels,
+                  datasets: [
+                      {
+                          label: 'Konsumsi Aktual (M³)',
+                          data: dataAktual,
+                          borderColor: '#1A3D63',
+                          backgroundColor: 'rgba(26,61,99,0.12)',
+                          fill: true,
+                          tension: 0.4,
+                          pointBackgroundColor: '#1A3D63',
+                          pointRadius: 4
+                      },
+                      {
+                          label: 'Forecast Konsumsi (M³)',
+                          data: dataForecast,
+                          borderColor: '#E67E22',
+                          borderDash: [6,6],
+                          backgroundColor: 'rgba(230,126,34,0.12)',
+                          fill: true,
+                          tension: 0.4,
+                          pointBackgroundColor: '#E67E22',
+                          pointRadius: 4
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  interaction: {
+                      mode: 'index',
+                      intersect: false
+                  },
+                  plugins: {
+                      legend: {
+                          display: true
+                      }
+                  }
+              }
+          });
+    }
+}
+</script>
+{% endblock %}

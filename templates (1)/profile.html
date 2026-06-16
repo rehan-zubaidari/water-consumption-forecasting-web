@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header class="header-forecasting">
+    <h1 class="gradient-text">
+      Informasi Akun & Aktivitasmu<span class="emoji">🧑‍💼</span>
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Profil Saya</h1>
+  <p>Kelola informasi akun dan data pribadi Anda di sini</p>
+</div>
+
+                {% block flash %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                       <ul id="flash-messages" class="flash-messages-profile">
+                          {% for category, message in messages %}
+                            <li class="alert alert-{{ category }}">{{ message }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    {% endwith %}
+                  {% endblock %}
+
+<div class="profile-container">
+    <!-- Kiri: Foto Profil -->
+    <div class="left-section">
+        <h2>Profil Saya</h2>
+            <img src="{{ url_for('static', filename='uploads/profile_pictures/' + (user.profile_picture if user.profile_picture else 'default_profile.png')) }}" 
+                alt="Foto Profil" class="profile-picture">
+        <form method="POST" action="{{ url_for('upload_profile_picture') }}" enctype="multipart/form-data">
+            <input type="file" name="profile_picture" accept="image/*" required>
+            <button type="submit">Simpan Foto</button>
+        </form>
+        <p><strong>{{ user.full_name }}</strong></p>
+        <p>{{ user.position }}</p>
+        <p>{{ user.email }}</p>
+    </div>
+
+    <!-- Kanan: Form Edit Data -->
+    <div class="right-section">
+        <h2>Edit Data Profil</h2>
+        <form method="POST" action="{{ url_for('profil_saya') }}">
+            <label>Nama Lengkap</label>
+                <input type="text" name="full_name" value="{{ user.full_name }}" placeholder="Masukkan nama lengkap" required>
+
+            <label>Employee ID</label>
+                <input type="text" name="employee_id" value="{{ user.employee_id}}" placeholder="Masukkan ID Pegawai" readonly title="ID Pegawai tidak bisa diubah">
+
+            <label>NIK</label>
+                <input type="text" name="nik" value="{{ user.nik or '' }}" placeholder="Masukkan NIK" required
+                    maxlength="16" pattern="\d{16}" title="NIK harus 16 digit angka">
+            
+            <label>Posisi/Jabatan</label>
+                <input type="text" name="position" value="{{ user.position or '' }}" placeholder="Masukkan posisi/jabatan">
+
+            <label>Email</label>
+                <input type="email" name="email" value="{{ user.email }}" placeholder="Masukkan Email" required>
+
+            <label>Nomor HP</label>
+                <input type="text" name="phone_number" value="{{ user.phone_number }}" placeholder="Masukkan Nomor Hp" required>
+
+            <label>Alamat Tinggal</label>
+                <input type="text" name="address" value="{{ user.address or '' }}" placeholder="Masukkan Alamat Tinggal" required>
+
+            <label>Tanggal Lahir</label>
+                <input type="date" name="birth_date" value="{{ user.birth_date.strftime('%Y-%m-%d') if user.birth_date else '' }}">
+
+            <label>Jenis Kelamin</label>
+                <select name="gender" required>
+                    <option value="" disabled {% if not user.gender %}selected{% endif %}>Pilih Jenis Kelamin</option>
+                    <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Laki-laki</option>
+                    <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Perempuan</option>
+                </select>
+
+            <label>Pendidikan Terakhir</label>
+                <select name="education" required>
+                    <option value="" disabled {% if not user.education %}selected{% endif %}>Pilih pendidikan terakhir</option>
+                    <option value="SD" {% if user.education == 'SD' %}selected{% endif %}>SD / Sederajat</option>
+                    <option value="SMP" {% if user.education == 'SMP' %}selected{% endif %}>SMP / Sederajat</option>
+                    <option value="SMA" {% if user.education == 'SMA' %}selected{% endif %}>SMA / SMK / Sederajat</option>
+                    <option value="D3" {% if user.education == 'D3' %}selected{% endif %}>Diploma 3 (D3)</option>
+                    <option value="S1" {% if user.education == 'S1' %}selected{% endif %}>Sarjana (S1)</option>
+                    <option value="S2" {% if user.education == 'S2' %}selected{% endif %}>Magister (S2)</option>
+                    <option value="S3" {% if user.education == 'S3' %}selected{% endif %}>Doktor (S3)</option>
+                </select>
+
+            <label>Kontak Keluarga</label>
+                <input type="text" name="family_contact" value="{{ user.family_contact or '' }}" placeholder="Masukkan Kontak Keluarga" required>
+
+            <label>Ubah Password</label>
+                <input type="password" name="password" placeholder="Masukkan password baru">
+
+            <label>Konfirmasi Password</label>
+                <input type="password" name="confirm_password" placeholder="Konfirmasi password baru">
+
+            <label>Media Sosial</label>
+                <input type="url" name="social_media" value="{{ user.social_media or '' }}"
+                placeholder="example: https://www.instagram.com/username">
+
+            <button type="submit">Simpan Perubahan</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
